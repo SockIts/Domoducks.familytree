@@ -11,6 +11,9 @@
             padding: 10px;
             background-color: #f0f0f0;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .input-container {
             text-align: center;
@@ -46,7 +49,9 @@
             flex-direction: column;
             align-items: center;
             position: relative;
-            margin-top: 10px;
+            margin: 10px auto;
+            max-width: 900px;
+            width: 100%;
         }
         .vertical-line {
             position: absolute;
@@ -62,14 +67,14 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 80px;
+            gap: 50px;
             margin: 20px 0;
             position: relative;
             width: 100%;
             z-index: 1;
         }
         .level.children {
-            gap: 10px;
+            gap: 25px;
         }
         .level.single {
             justify-content: center;
@@ -113,10 +118,16 @@
             word-wrap: break-word;
             word-break: break-all;
             font-size: 10px;
+            line-height: 0.8;
             margin-bottom: 5px;
+            cursor: pointer;
+            color: #007bff;
+        }
+        .node .id:hover {
+            text-decoration: underline;
         }
         .node .label {
-            font-size: 14px;
+            font-size: 12px;
             color: #333;
             margin-top: 4px;
         }
@@ -153,6 +164,7 @@
         .node.non-main img {
             width: 120px;
             height: 120px;
+          	background-color: #6f7c96;
         }
         .pagination {
             display: flex;
@@ -287,6 +299,7 @@
                 const filteredChildren = Array.isArray(childrenData?.ids) ? childrenData.ids.filter(cid => cid !== EXCLUDED_ID) : [];
 
                 let grandparents = [];
+                let greatGrandparents = [];
                 if (depth < 1 && filteredParents.length > 0) {
                     const grandparentMap = new Map();
                     for (const parentId of filteredParents) {
@@ -302,7 +315,8 @@
                                             content: gpData.content,
                                             isHtml: gpData.isHtml,
                                             isImage: gpData.isImage,
-                                            number: gpData.number
+                                            number: gpData.number,
+                                            parents: gpData.parents
                                         });
                                     }
                                 }
@@ -310,6 +324,27 @@
                         }
                     }
                     grandparents = Array.from(grandparentMap.values());
+                    if (grandparents.length > 0 && depth < 2) {
+                        const greatGrandparentMap = new Map();
+                        for (const grandparent of grandparents) {
+                            const greatGrandparentIds = Array.isArray(grandparent.parents) ? grandparent.parents.filter(ggid => ggid !== EXCLUDED_ID) : [];
+                            for (const ggId of greatGrandparentIds) {
+                                if (!greatGrandparentMap.has(ggId)) {
+                                    const ggData = await fetchInscriptionData(ggId, depth + 3);
+                                    if (ggData) {
+                                        greatGrandparentMap.set(ggId, {
+                                            id: ggId,
+                                            content: ggData.content,
+                                            isHtml: ggData.isHtml,
+                                            isImage: ggData.isImage,
+                                            number: ggData.number
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                        greatGrandparents = Array.from(greatGrandparentMap.values());
+                    }
                 }
 
                 return {
@@ -320,6 +355,7 @@
                     number: hiroData.number != null ? hiroData.number : 'N/A',
                     parents: filteredParents,
                     grandparents,
+                    greatGrandparents,
                     children: filteredChildren
                 };
             } catch (error) {
@@ -331,6 +367,7 @@
                     number: 'N/A',
                     parents: [],
                     grandparents: [],
+                    greatGrandparents: [],
                     children: []
                 };
             }
@@ -346,13 +383,14 @@
             node.className = `node ${levelType === 'main' ? 'main' : 'non-main'}`;
             node.dataset.id = id;
             let label = '';
-            if (levelType === 'grandparent') label = `Grandparent #${index + 1}`;
+            if (levelType === 'great-grandparent') label = `Great-Grandparent #${index + 1}`;
+            else if (levelType === 'grandparent') label = `Grandparent #${index + 1}`;
             else if (levelType === 'parent') label = `Parent #${index + 1}`;
             else if (levelType === 'main') label = 'Main Inscription';
             else if (levelType === 'child') label = `Child #${index + 1}`;
-            const satoshiText = id === SATOSHI_ID ? '<div class="satoshi-text">Sent to Satoshi</div>' : '';
+            const satoshiText = id === SATOSHI_ID ? '<div class="satoshi-text">(Sent to Satoshi)</div>' : '';
             node.innerHTML = `
-                <div class="id">${id}</div>
+                <span class="id" onclick="buildTree('${id}')">${id}</span>
                 ${isImage ? `<img src="${content}" alt="Inscription Content">` : `<iframe src="${content}" title="Inscription Content"></iframe>`}
                 <div class="label">${label}</div>
                 <div class="number">#${number}</div>
@@ -439,6 +477,7 @@
             errorDiv.style.display = 'none';
             currentPage = 1;
             allChildrenIds = [];
+            document.getElementById('inscription-id').value = inscriptionId;
 
             if (inscriptionId === EXCLUDED_ID) {
                 errorDiv.textContent = 'This inscription ID is excluded from display.';
@@ -449,6 +488,26 @@
             try {
                 const data = await fetchInscriptionData(inscriptionId);
                 if (!data) throw new Error('No data returned for inscription');
+
+                // Great-Grandparents level
+                const greatGrandparentsLevel = document.createElement('div');
+                greatGrandparentsLevel.className = `level ${data.greatGrandparents.length === 1 ? 'single' : data.greatGrandparents.length > 1 ? 'multiple' : ''}`;
+                if (data.grandparents.length > 0) {
+                    if (data.greatGrandparents.length > 1) {
+                        greatGrandparentsLevel.innerHTML = '<div class="horizontal-line"></div>';
+                    }
+                    if (data.greatGrandparents.length > 0) {
+                        let index = 0;
+                        for (const greatGrandparent of data.greatGrandparents) {
+                            const node = createNode(greatGrandparent.id, greatGrandparent.content, greatGrandparent.isHtml, greatGrandparent.isImage, 'great-grandparent', index, greatGrandparent.number);
+                            if (node) greatGrandparentsLevel.appendChild(node);
+                            index++;
+                        }
+                    } else {
+                        greatGrandparentsLevel.innerHTML = '<div>No Great-Grandparents</div>';
+                    }
+                    tree.appendChild(greatGrandparentsLevel);
+                }
 
                 // Grandparents level
                 const grandparentsLevel = document.createElement('div');
