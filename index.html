@@ -122,6 +122,8 @@
             z-index: 2;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            image-rendering: pixelated;
+
         }
         .node:hover {
             transform: scale(1.1);
@@ -169,7 +171,6 @@
             background-color: #6e7c96;
             display: block;
             margin: 0 auto;
-          	object-fit: contain;
         }
         .node.non-main iframe {
             width: 120px;
@@ -181,12 +182,12 @@
             object-fit: contain;
             display: block;
             margin: 0 auto;
-            image-rendering: pixelated;
         }
         .node.non-main img {
             width: 120px;
             height: 120px;
             background-color: #6f7c96;
+
         }
         .pagination {
             display: flex;
