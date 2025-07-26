@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<meta http-equiv="Content-Security-Policy" content="
+    default-src 'self' 'unsafe-eval' 'unsafe-inline' data: blob:;
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com;">
     <title>Domoducks Family Tree</title>
     <style>
         body {
@@ -506,15 +509,10 @@
                 <div class="number">#${number}</div>
                 ${satoshiText}
             `;
-            if (isHtml) {
-                const iframe = node.querySelector('iframe');
-                iframe.addEventListener('load', () => {
-                    const doc = iframe.contentDocument || iframe.contentWindow.document;
-                    const base = doc.createElement('base');
-                    base.href = baseUrl;
-                    doc.head.appendChild(base);
-                });
-            }
+  if (isHtml) {
+    const iframe = node.querySelector('iframe');
+    // Skip manipulating contentDocument
+}
             console.log(`Created node for ${id}, label: ${label}, number: #${number}${id === SATOSHI_ID ? ', with Sent to Satoshi' : ''}`);
             return node;
         }
