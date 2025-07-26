@@ -164,7 +164,7 @@
         .node.non-main img {
             width: 120px;
             height: 120px;
-          	background-color: #6f7c96;
+            background-color: #6f7c96;
         }
         .pagination {
             display: flex;
@@ -197,7 +197,7 @@
 </head>
 <body>
     <div class="input-container">
-        <input type="text" id="inscription-id" placeholder="Enter Inscription ID" value="593015b9a76a11554f0a05c3b77a4723c6baaefb8bdd4175712a7320714b8ea8i0">
+        <input type="text" id="inscription-id" placeholder="Enter Inscription ID" value="baa3af455e7e06f9b1fc805648a47a6377b66be68a83ecae9142f67b54d8d6dfi0">
         <button id="fetch-btn">Fetch Family Tree</button>
         <div id="error"></div>
     </div>
@@ -252,8 +252,30 @@
                         const doc = parser.parseFromString(text, 'text/html');
                         const imgTag = doc.querySelector('img');
                         if (imgTag?.src) {
-                            const src = imgTag.src;
-                            if (src.match(/\.(jpeg|jpg|png|gif|webp)$/i) || src.includes('api.hiro.so')) {
+                            let src = imgTag.src;
+                            // Resolve relative /content/... URLs to absolute ordinals.com URLs
+                            if (src.startsWith('/content/')) {
+                                src = `https://ordinals.com${src}`;
+                                // Check if the referenced content is an image
+                                try {
+                                    const imgResponse = await fetch(src, { method: 'HEAD' });
+                                    const imgContentType = imgResponse.headers.get('content-type');
+                                    if (imgContentType?.includes('image/')) {
+                                        content = src;
+                                        isImage = true;
+                                        console.log(`Inscription ${id}: Resolved image URL ${src}`);
+                                    } else {
+                                        content = URL.createObjectURL(new Blob([text], { type: 'text/html' }));
+                                        isHtml = true;
+                                        console.log(`Inscription ${id}: Referenced content is not an image, using HTML in iframe`);
+                                    }
+                                } catch (e) {
+                                    console.error(`Failed to fetch referenced content ${src}:`, e);
+                                    content = URL.createObjectURL(new Blob([text], { type: 'text/html' }));
+                                    isHtml = true;
+                                    console.log(`Inscription ${id}: Failed to verify referenced content, using HTML in iframe`);
+                                }
+                            } else if (src.match(/\.(jpeg|jpg|png|gif|webp)$/i) || src.includes('api.hiro.so')) {
                                 content = src;
                                 isImage = true;
                                 console.log(`Inscription ${id}: Found image URL ${src}`);
