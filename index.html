@@ -259,220 +259,259 @@
         let allChildrenIds = [];
         let network = 'ordinals';
 
-        async function fetchInscriptionData(id, depth = 0) {
-            if (id === EXCLUDED_ID) {
-                console.log(`Skipping excluded inscription ${id}`);
-                return null;
-            }
+        async function fetchInscriptionData(id, depth = 0, visited = new Set()) {
+    if (id === EXCLUDED_ID) {
+        console.log(`Skipping excluded inscription ${id}`);
+        return null;
+    }
 
-            const baseUrl = network === 'fractals' 
-                ? 'https://ordinals.fractalbitcoin.io'
-                : 'https://ordinals.com';
-            const inscriptionUrl = network === 'fractals'
-                ? `https://open-api-fractal.unisat.io/v1/indexer/inscription/info/${id}`
-                : `https://api.hiro.so/ordinals/v1/inscriptions/${id}`;
+    // Prevent recursive loops
+    if (visited.has(id)) {
+        console.log(`Inscription ${id}: Recursive reference detected, using placeholder`);
+        return {
+            id,
+            content: 'https://via.placeholder.com/150?text=Recursive+Error',
+            isImage: true,
+            isHtml: false,
+            number: 'N/A',
+            parents: [],
+            grandparents: [],
+            greatGrandparents: [],
+            children: []
+        };
+    }
+    visited.add(id);
 
-            try {
-                const [contentResponse, parentsResponse, childrenResponse, inscriptionResponse] = await Promise.all([
-                    fetch(`${baseUrl}/content/${id}`)
-                        .catch(e => {
-                            console.error(`Content fetch failed for ${id}:`, e);
-                            return { ok: false, headers: { get: () => null } };
-                        }),
-                    fetch(`${baseUrl}/r/parents/${id}`)
-                        .catch(e => {
-                            console.error(`Parents fetch failed for ${id}:`, e);
-                            return { ok: false };
-                        }),
-                    depth === 0 ? fetch(`${baseUrl}/r/children/${id}`)
-                        .catch(e => {
-                            console.error(`Children fetch failed for ${id}:`, e);
-                            return { ok: false };
-                        }) : { ok: false },
-                    fetch(inscriptionUrl)
-                        .catch(e => {
-                            console.error(`Inscription API fetch failed for ${id}:`, e);
-                            return { ok: false };
-                        })
-                ]);
+    const baseUrl = network === 'fractals' ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
+    const inscriptionUrl = network === 'fractals' ? `https://open-api-fractal.unisat.io/v1/indexer/inscription/info/${id}` : `https://api.hiro.so/ordinals/v1/inscriptions/${id}`;
 
-                let content = null, isHtml = false, isImage = false;
-                if (contentResponse.ok) {
-                    const contentType = contentResponse.headers.get('content-type');
-                    console.log(`Inscription ${id} content-type: ${contentType}`);
-                    if (contentType?.includes('text/html')) {
-                        const text = await contentResponse.text();
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(text, 'text/html');
-                        const imgTag = doc.querySelector('img');
-                        if (imgTag?.src) {
-                            let src = imgTag.src;
-                            if (src.startsWith('/content/')) {
-                                src = `${baseUrl}${src}`;
-                                try {
-                                    const imgResponse = await fetch(src, { method: 'HEAD' });
-                                    const imgContentType = imgResponse.headers.get('content-type');
-                                    if (imgContentType?.includes('image/')) {
-                                        content = src;
-                                        isImage = true;
-                                        console.log(`Inscription ${id}: Resolved image URL ${src}`);
-                                    } else {
-                                        content = URL.createObjectURL(new Blob([text], { type: 'text/html' }));
-                                        isHtml = true;
-                                        console.log(`Inscription ${id}: Referenced content is not an image, using HTML in iframe`);
-                                    }
-                                } catch (e) {
-                                    console.error(`Failed to fetch referenced content ${src}:`, e);
-                                    content = URL.createObjectURL(new Blob([text], { type: 'text/html' }));
-                                    isHtml = true;
-                                    console.log(`Inscription ${id}: Failed to verify referenced content, using HTML in iframe`);
-                                }
-                            } else if (src.match(/\.(jpeg|jpg|png|gif|webp)$/i) || src.includes('api.hiro.so') || src.includes('open-api-fractal.unisat.io')) {
+    try {
+        const [contentResponse, parentsResponse, childrenResponse, inscriptionResponse] = await Promise.all([
+            fetch(`${baseUrl}/content/${id}`).catch(e => {
+                console.error(`Content fetch failed for ${id}:`, e);
+                return { ok: false, headers: { get: () => null } };
+            }),
+            fetch(`${baseUrl}/r/parents/${id}`).catch(e => {
+                console.error(`Parents fetch failed for ${id}:`, e);
+                return { ok: false };
+            }),
+            depth === 0 ? fetch(`${baseUrl}/r/children/${id}`).catch(e => {
+                console.error(`Children fetch failed for ${id}:`, e);
+                return { ok: false };
+            }) : { ok: false },
+            fetch(inscriptionUrl).catch(e => {
+                console.error(`Inscription API fetch failed for ${id}:`, e);
+                return { ok: false };
+            })
+        ]);
+
+        let content = null, isHtml = false, isImage = false;
+        if (contentResponse.ok) {
+            const contentType = contentResponse.headers.get('content-type');
+            console.log(`Inscription ${id} content-type: ${contentType}`);
+            if (contentType?.includes('text/html')) {
+                const text = await contentResponse.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const imgTag = doc.querySelector('img');
+                if (imgTag?.src) {
+                    let src = imgTag.src;
+                    // Resolve relative URLs
+                    if (!src.startsWith('http')) {
+                        src = new URL(src, baseUrl).href;
+                    }
+                    // Extract inscription ID from src if it matches /content/{id}
+                    const match = src.match(/\/content\/([a-f0-9]+i\d+)/);
+                    const referencedId = match ? match[1] : null;
+                    if (referencedId && referencedId === id) {
+                        // Self-referential image
+                        content = 'https://via.placeholder.com/150?text=Self-Referential';
+                        isImage = true;
+                        console.log(`Inscription ${id}: Self-referential image detected, using placeholder`);
+                    } else if (referencedId && !visited.has(referencedId)) {
+                        // Recursively fetch referenced content
+                        const referencedData = await fetchInscriptionData(referencedId, depth + 1, new Set(visited));
+                        if (referencedData && referencedData.isImage) {
+                            content = referencedData.content;
+                            isImage = true;
+                            console.log(`Inscription ${id}: Using image from referenced inscription ${referencedId}`);
+                        } else {
+                            content = src;
+                            isImage = true;
+                            console.log(`Inscription ${id}: Attempting to load ${src} as image`);
+                        }
+                    } else {
+                        // Try loading as image
+                        try {
+                            const imgResponse = await fetch(src, { method: 'HEAD' });
+                            const imgContentType = imgResponse.headers.get('content-type');
+                            if (imgContentType?.includes('image/')) {
                                 content = src;
                                 isImage = true;
-                                console.log(`Inscription ${id}: Found image URL ${src}`);
+                                console.log(`Inscription ${id}: Resolved image URL ${src}`);
                             } else {
-                                content = URL.createObjectURL(new Blob([text], { type: 'text/html' }));
-                                isHtml = true;
-                                console.log(`Inscription ${id}: Using HTML content in iframe`);
+                                content = src;
+                                isImage = true;
+                                console.log(`Inscription ${id}: Non-image content-type (${imgContentType}), attempting as image`);
                             }
-                        } else {
-                            content = URL.createObjectURL(new Blob([text], { type: 'text/html' }));
-                            isHtml = true;
-                            console.log(`Inscription ${id}: No image tag found, using HTML content`);
+                        } catch (e) {
+                            console.error(`Failed to fetch referenced content ${src}:`, e);
+                            content = src;
+                            isImage = true;
+                            console.log(`Inscription ${id}: HEAD request failed, attempting to load ${src} as image`);
                         }
-                    } else if (contentType?.includes('image/')) {
-                        content = `${baseUrl}/content/${id}`;
-                        isImage = true;
-                        console.log(`Inscription ${id}: Direct image content`);
-                    } else {
-                        content = 'https://via.placeholder.com/150?text=Non-Image';
-                        isImage = true;
-                        console.log(`Inscription ${id}: Using placeholder image for non-HTML/non-image content`);
                     }
                 } else {
-                    content = 'https://via.placeholder.com/150?text=Error';
-                    isImage = true;
-                    console.log(`Inscription ${id}: Content fetch failed, using placeholder`);
+                    // Remove problematic scripts before creating Blob
+                    const scripts = doc.querySelectorAll('script[src*="chrome-extension"]');
+                    scripts.forEach(script => script.remove());
+                    content = URL.createObjectURL(new Blob([doc.documentElement.outerHTML], { type: 'text/html' }));
+                    isHtml = true;
+                    console.log(`Inscription ${id}: No image tag found or using cleaned HTML content`);
                 }
+            } else if (contentType?.includes('image/') || contentType === 'application/octet-stream') {
+                content = `${baseUrl}/content/${id}`;
+                isImage = true;
+                console.log(`Inscription ${id}: Direct image content or fallback for octet-stream`);
+            } else {
+                content = 'https://via.placeholder.com/150?text=Non-Image';
+                isImage = true;
+                console.log(`Inscription ${id}: Using placeholder image for non-HTML/non-image content`);
+            }
+        } else {
+            content = 'https://via.placeholder.com/150?text=Error';
+            isImage = true;
+            console.log(`Inscription ${id}: Content fetch failed, using placeholder`);
+        }
 
-                const parentsData = parentsResponse.ok ? await parentsResponse.json().catch(e => {
-                    console.error(`Error parsing parents for ${id}:`, e);
-                    return { ids: [] };
-                }) : { ids: [] };
-                const childrenData = depth === 0 && childrenResponse.ok ? await childrenResponse.json().catch(e => {
-                    console.error(`Error parsing children for ${id}:`, e);
-                    return { ids: [] };
-                }) : { ids: [] };
-                const inscriptionData = inscriptionResponse.ok ? await inscriptionResponse.json().catch(e => {
-                    console.error(`Error parsing Inscription API for ${id}:`, e);
-                    return { number: null };
-                }) : { number: null };
+        const parentsData = parentsResponse.ok ? await parentsResponse.json().catch(e => {
+            console.error(`Error parsing parents for ${id}:`, e);
+            return { ids: [] };
+        }) : { ids: [] };
+        const childrenData = depth === 0 && childrenResponse.ok ? await childrenResponse.json().catch(e => {
+            console.error(`Error parsing children for ${id}:`, e);
+            return { ids: [] };
+        }) : { ids: [] };
+        const inscriptionData = inscriptionResponse.ok ? await inscriptionResponse.json().catch(e => {
+            console.error(`Error parsing Inscription API for ${id}:`, e);
+            return { number: null };
+        }) : { number: null };
 
-                const filteredParents = Array.isArray(parentsData?.ids) ? parentsData.ids.filter(pid => pid !== EXCLUDED_ID) : [];
-                const filteredChildren = Array.isArray(childrenData?.ids) ? childrenData.ids.filter(cid => cid !== EXCLUDED_ID) : [];
+        const filteredParents = Array.isArray(parentsData?.ids) ? parentsData.ids.filter(pid => pid !== EXCLUDED_ID) : [];
+        const filteredChildren = Array.isArray(childrenData?.ids) ? childrenData.ids.filter(cid => cid !== EXCLUDED_ID) : [];
 
-                let grandparents = [];
-                let greatGrandparents = [];
-                if (depth < 1 && filteredParents.length > 0) {
-                    const grandparentMap = new Map();
-                    for (const parentId of filteredParents) {
-                        const parentData = await fetchInscriptionData(parentId, depth + 1);
-                        if (parentData) {
-                            const grandparentIds = Array.isArray(parentData.parents) ? parentData.parents.filter(gid => gid !== EXCLUDED_ID) : [];
-                            for (const gpId of grandparentIds) {
-                                if (!grandparentMap.has(gpId)) {
-                                    const ggData = await fetchInscriptionData(gpId, depth + 2);
-                                    if (ggData) {
-                                        grandparentMap.set(gpId, {
-                                            id: gpId,
-                                            content: ggData.content,
-                                            isHtml: ggData.isHtml,
-                                            isImage: ggData.isImage,
-                                            number: ggData.number,
-                                            parents: ggData.parents
-                                        });
-                                    }
-                                }
+        let grandparents = [];
+        let greatGrandparents = [];
+        if (depth < 1 && filteredParents.length > 0) {
+            const grandparentMap = new Map();
+            for (const parentId of filteredParents) {
+                const parentData = await fetchInscriptionData(parentId, depth + 1, new Set(visited));
+                if (parentData) {
+                    const grandparentIds = Array.isArray(parentData.parents) ? parentData.parents.filter(gid => gid !== EXCLUDED_ID) : [];
+                    for (const gpId of grandparentIds) {
+                        if (!grandparentMap.has(gpId)) {
+                            const ggData = await fetchInscriptionData(gpId, depth + 2, new Set(visited));
+                            if (ggData) {
+                                grandparentMap.set(gpId, {
+                                    id: gpId,
+                                    content: ggData.content,
+                                    isHtml: ggData.isHtml,
+                                    isImage: ggData.isImage,
+                                    number: ggData.number,
+                                    parents: ggData.parents
+                                });
                             }
                         }
                     }
-                    grandparents = Array.from(grandparentMap.values());
-                    if (grandparents.length > 0 && depth < 2) {
-                        const greatGrandparentMap = new Map();
-                        for (const grandparent of grandparents) {
-                            const greatGrandparentIds = Array.isArray(grandparent.parents) ? grandparent.parents.filter(ggid => ggid !== EXCLUDED_ID) : [];
-                            for (const ggId of greatGrandparentIds) {
-                                if (!greatGrandparentMap.has(ggId)) {
-                                    const ggData = await fetchInscriptionData(ggId, depth + 3);
-                                    if (ggData) {
-                                        greatGrandparentMap.set(ggId, {
-                                            id: ggId,
-                                            content: ggData.content,
-                                            isHtml: ggData.isHtml,
-                                            isImage: ggData.isImage,
-                                            number: ggData.number
-                                        });
-                                    }
-                                }
+                }
+            }
+            grandparents = Array.from(grandparentMap.values());
+            if (grandparents.length > 0 && depth < 2) {
+                const greatGrandparentMap = new Map();
+                for (const grandparent of grandparents) {
+                    const greatGrandparentIds = Array.isArray(grandparent.parents) ? grandparent.parents.filter(ggid => ggid !== EXCLUDED_ID) : [];
+                    for (const ggId of greatGrandparentIds) {
+                        if (!greatGrandparentMap.has(ggId)) {
+                            const ggData = await fetchInscriptionData(ggId, depth + 3, new Set(visited));
+                            if (ggData) {
+                                greatGrandparentMap.set(ggId, {
+                                    id: ggId,
+                                    content: ggData.content,
+                                    isHtml: ggData.isHtml,
+                                    isImage: ggData.isImage,
+                                    number: ggData.number
+                                });
                             }
                         }
-                        greatGrandparents = Array.from(greatGrandparentMap.values());
                     }
                 }
-
-                return {
-                    id,
-                    content,
-                    isHtml,
-                    isImage,
-                    number: inscriptionData.number != null ? inscriptionData.number : 'N/A',
-                    parents: filteredParents,
-                    grandparents,
-                    greatGrandparents,
-                    children: filteredChildren
-                };
-            } catch (error) {
-                console.error(`Error fetching data for ${id}:`, error);
-                return {
-                    id,
-                    content: 'https://via.placeholder.com/150?text=Error',
-                    isImage: true,
-                    number: 'N/A',
-                    parents: [],
-                    grandparents: [],
-                    greatGrandparents: [],
-                    children: []
-                };
+                greatGrandparents = Array.from(greatGrandparentMap.values());
             }
         }
+
+        return {
+            id,
+            content,
+            isHtml,
+            isImage,
+            number: inscriptionData.number != null ? inscriptionData.number : 'N/A',
+            parents: filteredParents,
+            grandparents,
+            greatGrandparents,
+            children: filteredChildren
+        };
+    } catch (error) {
+        console.error(`Error fetching data for ${id}:`, error);
+        return {
+            id,
+            content: 'https://via.placeholder.com/150?text=Error',
+            isImage: true,
+            number: 'N/A',
+            parents: [],
+            grandparents: [],
+            greatGrandparents: [],
+            children: []
+        };
+    }
+}
 
         function createNode(id, content, isHtml, isImage, levelType, index, number) {
-            if (id === EXCLUDED_ID) {
-                console.log(`Excluding node for ${id}`);
-                return null;
-            }
+    if (id === EXCLUDED_ID) {
+        console.log(`Excluding node for ${id}`);
+        return null;
+    }
 
-            const node = document.createElement('div');
-            node.className = `node ${levelType === 'main' ? 'main' : 'non-main'}`;
-            node.dataset.id = id;
-            let label = '';
-            if (levelType === 'great-grandparent') label = `Great-Grandparent #${index + 1}`;
-            else if (levelType === 'grandparent') label = `Grandparent #${index + 1}`;
-            else if (levelType === 'parent') label = `Parent #${index + 1}`;
-            else if (levelType === 'main') label = 'Main Inscription';
-            else if (levelType === 'child') label = `Child #${index + 1}`;
-            const satoshiText = id === SATOSHI_ID ? '<div class="satoshi-text">(Sent to Satoshi)</div>' : '';
-            node.innerHTML = `
-                <span class="id" onclick="buildTree('${id}')">${id}</span>
-                ${isImage ? `<img src="${content}" alt="Inscription Content">` : `<iframe src="${content}" title="Inscription Content"></iframe>`}
-                <div class="label">${label}</div>
-                <div class="number">#${number}</div>
-                ${satoshiText}
-            `;
-            console.log(`Created node for ${id}, label: ${label}, number: #${number}${id === SATOSHI_ID ? ', with Sent to Satoshi' : ''}`);
-            return node;
-        }
+    const node = document.createElement('div');
+    node.className = `node ${levelType === 'main' ? 'main' : 'non-main'}`;
+    node.dataset.id = id;
+    let label = '';
+    if (levelType === 'great-grandparent') label = `Great-Grandparent #${index + 1}`;
+    else if (levelType === 'grandparent') label = `Grandparent #${index + 1}`;
+    else if (levelType === 'parent') label = `Parent #${index + 1}`;
+    else if (levelType === 'main') label = 'Main Inscription';
+    else if (levelType === 'child') label = `Child #${index + 1}`;
+    const satoshiText = id === SATOSHI_ID ? '<div class="satoshi-text">(Sent to Satoshi)</div>' : '';
+    const baseUrl = network === 'fractals' ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
+    node.innerHTML = `
+        <span class="id" onclick="buildTree('${id}')">${id}</span>
+        ${isImage ? `<img src="${content}" alt="Inscription Content" onerror="this.src='https://via.placeholder.com/150?text=Image+Error';" crossOrigin="anonymous">` : `<iframe src="${content}" title="Inscription Content" sandbox="allow-scripts allow-same-origin"></iframe>`}
+        <div class="label">${label}</div>
+        <div class="number">#${number}</div>
+        ${satoshiText}
+    `;
+    // Inject base tag for iframe to resolve relative URLs
+    if (isHtml) {
+        const iframe = node.querySelector('iframe');
+        iframe.addEventListener('load', () => {
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            const base = doc.createElement('base');
+            base.href = baseUrl;
+            doc.head.appendChild(base);
+        });
+    }
+    console.log(`Created node for ${id}, label: ${label}, number: #${number}${id === SATOSHI_ID ? ', with Sent to Satoshi' : ''}`);
+    return node;
+}
 
         function renderPagination(totalChildren) {
             const totalPages = Math.ceil(totalChildren / CHILDREN_PER_PAGE);
