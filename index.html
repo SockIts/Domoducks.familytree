@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitcoin Ordinals Family Tree</title>
+    <title>Bitcoin Ordinals/Fractals Family Tree</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -85,7 +85,7 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 50px;
+            gap: 25px;
             margin: 20px 0;
             position: relative;
             width: 100%;
@@ -98,7 +98,7 @@
             justify-content: center;
         }
         .level.multiple {
-            justify-content: space-evenly;
+            justify-content: center;
         }
         .horizontal-line {
             position: absolute;
@@ -113,8 +113,8 @@
             padding: 10px;
             background-color: white;
             border-radius: 5px;
-            min-width: 180px;
-            max-width: 220px;
+            min-width: 240px;
+            max-width: 260px;
             text-align: center;
             box-sizing: border-box;
             position: relative;
@@ -123,13 +123,13 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .node:hover {
-            transform: scale(1.1);
+            transform: scale(1.2);
             z-index: 3;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
         }
         .node.non-main {
-            min-width: 120px;
-            max-width: 160px;
+            min-width: 140px;
+            max-width: 180px;
         }
         .node.main {
             border: 5px solid #007bff;
@@ -168,10 +168,12 @@
             background-color: #6e7c96;
             display: block;
             margin: 0 auto;
+            object-fit: contain;
         }
         .node.non-main iframe {
             width: 120px;
             height: 120px;
+            object-fit: contain;
         }
         .node img {
             width: 180px;
@@ -213,10 +215,29 @@
             font-size: 14px;
             line-height: 1.5;
         }
+        .toggle-container {
+            margin: 10px;
+        }
+        .toggle-container label {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .toggle-container select {
+            padding: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="input-container">
+        <div class="toggle-container">
+            <label for="network-toggle">Network:</label>
+            <select id="network-toggle">
+                <option value="ordinals" selected>Ordinals</option>
+                <option value="fractals">Fractals</option>
+            </select>
+        </div>
         <input type="text" id="inscription-id" placeholder="Enter Inscription ID" value="593015b9a76a11554f0a05c3b77a4723c6baaefb8bdd4175712a7320714b8ea8i0">
         <button id="fetch-btn">Fetch Family Tree</button>
         <div id="error"></div>
@@ -230,8 +251,11 @@
         const EXCLUDED_ID = '3076dfe2994ca4b229009eaf5696ad51c4cc68159d13a73a7927a3b8638e411ai0';
         const SATOSHI_ID = '84defb5e7db11f047b4bc58685b65654980be4a55e254a510048a71e0e43e532i0';
         const CHILDREN_PER_PAGE = 16;
+        const DEFAULT_ORDINALS_ID = '593015b9a76a11554f0a05c3b77a4723c6baaefb8bdd4175712a7320714b8ea8i0';
+        const DEFAULT_FRACTALS_ID = 'a8c39053a557f72619115be77dfeb7bd8506c4d23dee7ddb86d5bc2aea421eeei0';
         let currentPage = 1;
         let allChildrenIds = [];
+        let network = 'ordinals';
 
         async function fetchInscriptionData(id, depth = 0) {
             if (id === EXCLUDED_ID) {
@@ -239,26 +263,33 @@
                 return null;
             }
 
+            const baseUrl = network === 'fractals' 
+                ? 'https://ordinals.fractalbitcoin.io'
+                : 'https://ordinals.com';
+            const inscriptionUrl = network === 'fractals'
+                ? `https://open-api-fractal.unisat.io/v1/indexer/inscription/info/${id}`
+                : `https://api.hiro.so/ordinals/v1/inscriptions/${id}`;
+
             try {
-                const [contentResponse, parentsResponse, childrenResponse, hiroResponse] = await Promise.all([
-                    fetch(`https://ordinals.com/content/${id}`)
+                const [contentResponse, parentsResponse, childrenResponse, inscriptionResponse] = await Promise.all([
+                    fetch(`${baseUrl}/content/${id}`)
                         .catch(e => {
                             console.error(`Content fetch failed for ${id}:`, e);
                             return { ok: false, headers: { get: () => null } };
                         }),
-                    fetch(`https://ordinals.com/r/parents/${id}`)
+                    fetch(`${baseUrl}/r/parents/${id}`)
                         .catch(e => {
                             console.error(`Parents fetch failed for ${id}:`, e);
                             return { ok: false };
                         }),
-                    depth === 0 ? fetch(`https://ordinals.com/r/children/${id}`)
+                    depth === 0 ? fetch(`${baseUrl}/r/children/${id}`)
                         .catch(e => {
                             console.error(`Children fetch failed for ${id}:`, e);
                             return { ok: false };
                         }) : { ok: false },
-                    fetch(`https://api.hiro.so/ordinals/v1/inscriptions/${id}`)
+                    fetch(inscriptionUrl)
                         .catch(e => {
-                            console.error(`Hiro API fetch failed for ${id}:`, e);
+                            console.error(`Inscription API fetch failed for ${id}:`, e);
                             return { ok: false };
                         })
                 ]);
@@ -275,7 +306,7 @@
                         if (imgTag?.src) {
                             let src = imgTag.src;
                             if (src.startsWith('/content/')) {
-                                src = `https://ordinals.com${src}`;
+                                src = `${baseUrl}${src}`;
                                 try {
                                     const imgResponse = await fetch(src, { method: 'HEAD' });
                                     const imgContentType = imgResponse.headers.get('content-type');
@@ -294,7 +325,7 @@
                                     isHtml = true;
                                     console.log(`Inscription ${id}: Failed to verify referenced content, using HTML in iframe`);
                                 }
-                            } else if (src.match(/\.(jpeg|jpg|png|gif|webp)$/i) || src.includes('api.hiro.so')) {
+                            } else if (src.match(/\.(jpeg|jpg|png|gif|webp)$/i) || src.includes('api.hiro.so') || src.includes('open-api-fractal.unisat.io')) {
                                 content = src;
                                 isImage = true;
                                 console.log(`Inscription ${id}: Found image URL ${src}`);
@@ -309,7 +340,7 @@
                             console.log(`Inscription ${id}: No image tag found, using HTML content`);
                         }
                     } else if (contentType?.includes('image/')) {
-                        content = `https://ordinals.com/content/${id}`;
+                        content = `${baseUrl}/content/${id}`;
                         isImage = true;
                         console.log(`Inscription ${id}: Direct image content`);
                     } else {
@@ -331,8 +362,8 @@
                     console.error(`Error parsing children for ${id}:`, e);
                     return { ids: [] };
                 }) : { ids: [] };
-                const hiroData = hiroResponse.ok ? await hiroResponse.json().catch(e => {
-                    console.error(`Error parsing Hiro API for ${id}:`, e);
+                const inscriptionData = inscriptionResponse.ok ? await inscriptionResponse.json().catch(e => {
+                    console.error(`Error parsing Inscription API for ${id}:`, e);
                     return { number: null };
                 }) : { number: null };
 
@@ -349,15 +380,15 @@
                             const grandparentIds = Array.isArray(parentData.parents) ? parentData.parents.filter(gid => gid !== EXCLUDED_ID) : [];
                             for (const gpId of grandparentIds) {
                                 if (!grandparentMap.has(gpId)) {
-                                    const gpData = await fetchInscriptionData(gpId, depth + 2);
-                                    if (gpData) {
+                                    const ggData = await fetchInscriptionData(gpId, depth + 2);
+                                    if (ggData) {
                                         grandparentMap.set(gpId, {
                                             id: gpId,
-                                            content: gpData.content,
-                                            isHtml: gpData.isHtml,
-                                            isImage: gpData.isImage,
-                                            number: gpData.number,
-                                            parents: gpData.parents
+                                            content: ggData.content,
+                                            isHtml: ggData.isHtml,
+                                            isImage: ggData.isImage,
+                                            number: ggData.number,
+                                            parents: ggData.parents
                                         });
                                     }
                                 }
@@ -393,7 +424,7 @@
                     content,
                     isHtml,
                     isImage,
-                    number: hiroData.number != null ? hiroData.number : 'N/A',
+                    number: inscriptionData.number != null ? inscriptionData.number : 'N/A',
                     parents: filteredParents,
                     grandparents,
                     greatGrandparents,
@@ -625,6 +656,13 @@
                 errorDiv.textContent = 'Please enter a valid Inscription ID';
                 errorDiv.style.display = 'block';
             }
+        });
+
+        document.getElementById('network-toggle').addEventListener('change', (event) => {
+            network = event.target.value;
+            const inscriptionId = network === 'fractals' ? DEFAULT_FRACTALS_ID : DEFAULT_ORDINALS_ID;
+            document.getElementById('inscription-id').value = inscriptionId;
+            buildTree(inscriptionId);
         });
 
         window.onload = () => {
