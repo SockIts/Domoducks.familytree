@@ -270,7 +270,7 @@
         console.log(`Inscription ${id}: Recursive reference detected, using placeholder`);
         return {
             id,
-            content: 'https://via.placeholder.com/150?text=Recursive+Error',
+            content: 'https://placehold.co/150x150?text=Self-Referential',
             isImage: true,
             isHtml: false,
             number: 'N/A',
@@ -283,6 +283,7 @@
     visited.add(id);
 
     const baseUrl = network === 'fractals' ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
+    const previewBaseUrl = network === 'fractals' ? 'https://fractal-static.unisat.io/preview' : baseUrl;
     const inscriptionUrl = network === 'fractals' ? `https://open-api-fractal.unisat.io/v1/indexer/inscription/info/${id}` : `https://api.hiro.so/ordinals/v1/inscriptions/${id}`;
 
     try {
@@ -320,45 +321,62 @@
                     if (!src.startsWith('http')) {
                         src = new URL(src, baseUrl).href;
                     }
-                    // Extract inscription ID from src if it matches /content/{id}
-                    const match = src.match(/\/content\/([a-f0-9]+i\d+)/);
-                    const referencedId = match ? match[1] : null;
-                    if (referencedId && referencedId === id) {
-                        // Self-referential image
-                        content = 'https://via.placeholder.com/150?text=Self-Referential';
+                    // Use preview endpoint for Fractal Bitcoin
+                    if (network === 'fractals') {
+                        content = `${previewBaseUrl}/${id}`;
                         isImage = true;
-                        console.log(`Inscription ${id}: Self-referential image detected, using placeholder`);
-                    } else if (referencedId && !visited.has(referencedId)) {
-                        // Recursively fetch referenced content
-                        const referencedData = await fetchInscriptionData(referencedId, depth + 1, new Set(visited));
-                        if (referencedData && referencedData.isImage) {
-                            content = referencedData.content;
-                            isImage = true;
-                            console.log(`Inscription ${id}: Using image from referenced inscription ${referencedId}`);
-                        } else {
-                            content = src;
-                            isImage = true;
-                            console.log(`Inscription ${id}: Attempting to load ${src} as image`);
+                        console.log(`Inscription ${id}: Using preview endpoint ${content}`);
+                        // Verify preview endpoint
+                        try {
+                            const imgResponse = await fetch(content, { method: 'HEAD' });
+                            const imgContentType = imgResponse.headers.get('content-type');
+                            console.log(`Preview HEAD request for ${content}: Status ${imgResponse.status}, Content-Type: ${imgContentType}`);
+                            if (!imgContentType?.includes('image/')) {
+                                console.warn(`Non-image content-type for preview ${content}: ${imgContentType}, falling back to placeholder`);
+                                content = 'https://placehold.co/150x150?text=Preview+Error';
+                            }
+                        } catch (e) {
+                            console.error(`Preview HEAD request failed for ${content}:`, e);
+                            content = 'https://placehold.co/150x150?text=Preview+Error';
                         }
                     } else {
-                        // Try loading as image
-                        try {
-                            const imgResponse = await fetch(src, { method: 'HEAD' });
-                            const imgContentType = imgResponse.headers.get('content-type');
-                            if (imgContentType?.includes('image/')) {
-                                content = src;
+                        // Handle non-Fractal networks
+                        const match = src.match(/\/content\/([a-f0-9]+i\d+)/);
+                        const referencedId = match ? match[1] : null;
+                        if (referencedId && referencedId === id) {
+                            content = 'https://placehold.co/150x150?text=Self-Referential';
+                            isImage = true;
+                            console.log(`Inscription ${id}: Self-referential image detected, using placeholder`);
+                        } else if (referencedId && !visited.has(referencedId)) {
+                            const referencedData = await fetchInscriptionData(referencedId, depth + 1, new Set(visited));
+                            if (referencedData && referencedData.isImage) {
+                                content = referencedData.content;
                                 isImage = true;
-                                console.log(`Inscription ${id}: Resolved image URL ${src}`);
+                                console.log(`Inscription ${id}: Using image from referenced inscription ${referencedId}`);
                             } else {
                                 content = src;
                                 isImage = true;
-                                console.log(`Inscription ${id}: Non-image content-type (${imgContentType}), attempting as image`);
+                                console.log(`Inscription ${id}: Attempting to load ${src} as image`);
                             }
-                        } catch (e) {
-                            console.error(`Failed to fetch referenced content ${src}:`, e);
-                            content = src;
-                            isImage = true;
-                            console.log(`Inscription ${id}: HEAD request failed, attempting to load ${src} as image`);
+                        } else {
+                            try {
+                                const imgResponse = await fetch(src, { method: 'HEAD' });
+                                const imgContentType = imgResponse.headers.get('content-type');
+                                if (imgContentType?.includes('image/')) {
+                                    content = src;
+                                    isImage = true;
+                                    console.log(`Inscription ${id}: Resolved image URL ${src}`);
+                                } else {
+                                    content = src;
+                                    isImage = true;
+                                    console.log(`Inscription ${id}: Non-image content-type (${imgContentType}), attempting as image`);
+                                }
+                            } catch (e) {
+                                console.error(`Failed to fetch referenced content ${src}:`, e);
+                                content = src;
+                                isImage = true;
+                                console.log(`Inscription ${id}: HEAD request failed, attempting to load ${src} as image`);
+                            }
                         }
                     }
                 } else {
@@ -370,16 +388,35 @@
                     console.log(`Inscription ${id}: No image tag found or using cleaned HTML content`);
                 }
             } else if (contentType?.includes('image/') || contentType === 'application/octet-stream') {
-                content = `${baseUrl}/content/${id}`;
+                content = network === 'fractals' ? `${previewBaseUrl}/${id}` : `${baseUrl}/content/${id}`;
                 isImage = true;
-                console.log(`Inscription ${id}: Direct image content or fallback for octet-stream`);
+                console.log(`Inscription ${id}: Using ${network === 'fractals' ? 'preview' : 'direct'} image content at ${content}`);
+                // Verify preview endpoint for Fractal Bitcoin
+                if (network === 'fractals') {
+    content = `${previewBaseUrl}/${id}`;
+    isImage = true;
+    try {
+        const imgResponse = await fetch(content, { method: 'HEAD' });
+        const imgContentType = imgResponse.headers.get('content-type');
+        if (!imgContentType?.includes('image/')) {
+            console.warn(`Non-image content-type for preview ${content}: ${imgContentType}, falling back to content URL`);
+            content = `${baseUrl}/content/${id}`;
+        }
+    } catch (e) {
+        console.error(`Preview HEAD request failed for ${content}:`, e);
+        console.log(`Falling back to content URL: ${baseUrl}/content/${id}`);
+        content = `${baseUrl}/content/${id}`;
+        isImage = true;
+    }
+}
             } else {
-                content = 'https://via.placeholder.com/150?text=Non-Image';
+                content = 'https://placehold.co/150x150?text=Non-Image';
                 isImage = true;
                 console.log(`Inscription ${id}: Using placeholder image for non-HTML/non-image content`);
             }
         } else {
-            content = 'https://via.placeholder.com/150?text=Error';
+            console.error(`Content fetch failed for ${id}: Status ${contentResponse.status}, ${await contentResponse.text().catch(() => 'No response body')}`);
+            content = 'https://placehold.co/150x150?text=Error';
             isImage = true;
             console.log(`Inscription ${id}: Content fetch failed, using placeholder`);
         }
@@ -464,7 +501,7 @@
         console.error(`Error fetching data for ${id}:`, error);
         return {
             id,
-            content: 'https://via.placeholder.com/150?text=Error',
+            content: 'https://placehold.co/150x150?text=Error',
             isImage: true,
             number: 'N/A',
             parents: [],
@@ -494,7 +531,7 @@
     const baseUrl = network === 'fractals' ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
     node.innerHTML = `
         <span class="id" onclick="buildTree('${id}')">${id}</span>
-        ${isImage ? `<img src="${content}" alt="Inscription Content" onerror="this.src='https://via.placeholder.com/150?text=Image+Error';" crossOrigin="anonymous">` : `<iframe src="${content}" title="Inscription Content" sandbox="allow-scripts allow-same-origin"></iframe>`}
+        ${isImage ? `<img src="${content}" alt="Inscription Content" onerror="this.src='https://placehold.co/150x150?text=Image+Error'; this.onerror=null;" crossOrigin="anonymous">` : `<iframe src="${content}" title="Inscription Content" sandbox="allow-scripts allow-same-origin"></iframe>`}
         <div class="label">${label}</div>
         <div class="number">#${number}</div>
         ${satoshiText}
