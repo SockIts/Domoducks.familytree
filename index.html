@@ -259,13 +259,18 @@
         let allChildrenIds = [];
         let network = 'ordinals';
 
+        function validateInscriptionId(id) {
+            // Check if ID matches 64-character hex + 'i' + number
+            const regex = /^[0-9a-fA-F]{64}i\d+$/;
+            return regex.test(id);
+        }
+
         async function fetchInscriptionData(id, depth = 0, visited = new Set()) {
             if (id === EXCLUDED_ID) {
                 console.log(`Skipping excluded inscription ${id}`);
                 return null;
             }
 
-            // Prevent recursive loops
             if (visited.has(id)) {
                 console.log(`Inscription ${id}: Recursive reference detected, using placeholder`);
                 return {
@@ -281,6 +286,21 @@
                 };
             }
             visited.add(id);
+
+            if (!validateInscriptionId(id)) {
+                console.error(`Invalid inscription ID format: ${id}`);
+                return {
+                    id,
+                    content: 'https://placehold.co/150x150?text=Invalid+ID',
+                    isImage: true,
+                    isHtml: false,
+                    number: 'N/A',
+                    parents: [],
+                    grandparents: [],
+                    greatGrandparents: [],
+                    children: []
+                };
+            }
 
             const baseUrl = network === 'fractals' ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
             const previewBaseUrl = network === 'fractals' ? 'https://fractal-static.unisat.io/preview' : 'https://ordinals.com/preview';
@@ -303,63 +323,36 @@
                     })
                 ]);
 
-                // Start with previewBaseUrl
                 let content = `${previewBaseUrl}/${id}`;
                 let isImage = true;
                 let isHtml = false;
 
-                // Verify preview endpoint
                 try {
                     const previewResponse = await fetch(content, { method: 'HEAD' });
                     const previewContentType = previewResponse.headers.get('content-type');
                     console.log(`Preview HEAD request for ${content}: Status ${previewResponse.status}, Content-Type: ${previewContentType}`);
 
-                    if (previewContentType?.includes('image/')) {
-                        // Preview is an image, use it directly
+                    if (previewResponse.status >= 400) {
+                        console.warn(`Preview request failed with status ${previewResponse.status}, trying content endpoint`);
+                        content = `${contentBaseUrl}/${id}`;
+                    } else if (previewContentType?.includes('image/')) {
                         isImage = true;
-                    } else if (previewContentType?.includes('text/html')) {
-                        // Preview is HTML, try content endpoint
+                    } else {
                         console.warn(`Non-image content-type for preview ${content}: ${previewContentType}, trying content endpoint`);
                         content = `${contentBaseUrl}/${id}`;
-                        try {
-                            const contentResponse = await fetch(content, { method: 'HEAD' });
-                            const contentContentType = contentResponse.headers.get('content-type');
-                            console.log(`Content HEAD request for ${content}: Status ${contentResponse.status}, Content-Type: ${contentContentType}`);
-                            if (contentContentType?.includes('image/')) {
-                                // Content is an image, use it
-                                isImage = true;
-                            } else {
-                                // Content is not an image (likely HTML with inline images), use preview as iframe
-                                console.warn(`Non-image content-type for content ${content}: ${contentContentType}, using preview as HTML`);
-                                content = `${previewBaseUrl}/${id}`;
-                                isImage = false;
-                                isHtml = true;
-                            }
-                        } catch (e) {
-                            console.error(`Content HEAD request failed for ${content}:`, e);
-                            // Fallback to preview as iframe
-                            content = `${previewBaseUrl}/${id}`;
-                            isImage = false;
-                            isHtml = true;
-                        }
-                    } else {
-                        // Unexpected content type, use placeholder
-                        console.warn(`Unexpected content-type for preview ${content}: ${previewContentType}, falling back to placeholder`);
-                        content = 'https://placehold.co/150x150?text=Preview+Error';
-                        isImage = true;
                     }
-                } catch (e) {
-                    console.error(`Preview HEAD request failed for ${content}:`, e);
-                    // Try content endpoint as fallback
-                    content = `${contentBaseUrl}/${id}`;
+
                     try {
                         const contentResponse = await fetch(content, { method: 'HEAD' });
                         const contentContentType = contentResponse.headers.get('content-type');
                         console.log(`Content HEAD request for ${content}: Status ${contentResponse.status}, Content-Type: ${contentContentType}`);
-                        if (contentContentType?.includes('image/')) {
+                        if (contentResponse.status >= 400) {
+                            console.warn(`Content request failed with status ${contentResponse.status}, using placeholder`);
+                            content = 'https://placehold.co/150x150?text=Preview+Error';
+                            isImage = true;
+                        } else if (contentContentType?.includes('image/')) {
                             isImage = true;
                         } else {
-                            // Content is not an image, use preview as iframe
                             console.warn(`Non-image content-type for content ${content}: ${contentContentType}, using preview as HTML`);
                             content = `${previewBaseUrl}/${id}`;
                             isImage = false;
@@ -367,10 +360,33 @@
                         }
                     } catch (e) {
                         console.error(`Content HEAD request failed for ${content}:`, e);
-                        // Fallback to preview as iframe
                         content = `${previewBaseUrl}/${id}`;
                         isImage = false;
                         isHtml = true;
+                    }
+                } catch (e) {
+                    console.error(`Preview HEAD request failed for ${content}:`, e);
+                    content = `${contentBaseUrl}/${id}`;
+                    try {
+                        const contentResponse = await fetch(content, { method: 'HEAD' });
+                        const contentContentType = contentResponse.headers.get('content-type');
+                        console.log(`Content HEAD request for ${content}: Status ${contentResponse.status}, Content-Type: ${contentContentType}`);
+                        if (contentResponse.status >= 400) {
+                            console.warn(`Content request failed with status ${contentResponse.status}, using placeholder`);
+                            content = 'https://placehold.co/150x150?text=Preview+Error';
+                            isImage = true;
+                        } else if (contentContentType?.includes('image/')) {
+                            isImage = true;
+                        } else {
+                            console.warn(`Non-image content-type for content ${content}: ${contentContentType}, using preview as HTML`);
+                            content = `${previewBaseUrl}/${id}`;
+                            isImage = false;
+                            isHtml = true;
+                        }
+                    } catch (e) {
+                        console.error(`Content HEAD request failed for ${content}:`, e);
+                        content = 'https://placehold.co/150x150?text=Preview+Error';
+                        isImage = true;
                     }
                 }
 
@@ -456,6 +472,7 @@
                     id,
                     content: 'https://placehold.co/150x150?text=Error',
                     isImage: true,
+                    isHtml: false,
                     number: 'N/A',
                     parents: [],
                     grandparents: [],
@@ -489,7 +506,6 @@
                 <div class="number">#${number}</div>
                 ${satoshiText}
             `;
-            // Inject base tag for iframe to resolve relative URLs
             if (isHtml) {
                 const iframe = node.querySelector('iframe');
                 iframe.addEventListener('load', () => {
@@ -541,20 +557,21 @@
             const childrenLevel = document.getElementById('children-level');
             if (!childrenLevel) return;
 
-            const startIndex = (currentPage - 1) * CHILDREN_PER_PAGE;
-            const endIndex = startIndex + CHILDREN_PER_PAGE;
-            const paginatedChildIds = allChildrenIds.slice(startIndex, endIndex);
-
             try {
                 childrenLevel.innerHTML = '';
-                if (paginatedChildIds.length > 1) {
+                if (allChildrenIds.length > 1) {
                     childrenLevel.innerHTML = '<div class="horizontal-line"></div>';
                 }
+
+                const startIndex = (currentPage - 1) * CHILDREN_PER_PAGE;
+                const endIndex = Math.min(startIndex + CHILDREN_PER_PAGE, allChildrenIds.length);
+                const paginatedChildIds = allChildrenIds.slice(startIndex, endIndex);
+
                 if (paginatedChildIds.length > 0) {
                     let index = startIndex;
                     for (const childId of paginatedChildIds) {
                         const childData = await fetchInscriptionData(childId, 1);
-                        if (childData ) {
+                        if (childData) {
                             const node = createNode(childId, childData.content, childData.isHtml, childData.isImage, 'child', index, childData.number);
                             if (node) childrenLevel.appendChild(node);
                             index++;
@@ -597,21 +614,35 @@
                 return;
             }
 
+            if (!validateInscriptionId(inscriptionId)) {
+                errorDiv.textContent = 'Invalid Inscription ID format. Please enter a valid 64-character hex ID followed by "i" and a number (e.g., i0).';
+                errorDiv.style.display = 'block';
+                loadingDiv.style.display = 'none';
+                return;
+            }
+
             try {
                 const data = await fetchInscriptionData(inscriptionId);
                 if (!data) throw new Error('Failed to fetch inscription data');
 
-                // Great-grandparents level
                 const greatGrandparentsLevel = document.createElement('div');
                 greatGrandparentsLevel.className = `level ${data.greatGrandparents.length === 1 ? 'single' : data.greatGrandparents.length > 0 ? 'multiple' : ''}`;
                 if (data.grandparents.length > 0) {
                     if (data.greatGrandparents.length > 1) {
-                        greatGrandParentsLevel.innerHTML = '<div class="horizontal-line"></div>';
+                        greatGrandparentsLevel.innerHTML = '<div class="horizontal-line"></div>';
                     }
                     if (data.greatGrandparents.length > 0) {
                         let index = 0;
                         for (const greatGrandparent of data.greatGrandparents) {
-                            const node = createNode(greatGrandparent.id, greatGrandparent.content, greatGrandparent.isHtml, 'great-grandparent', index, greatGrandparent.number);
+                            const node = createNode(
+                                greatGrandparent.id,
+                                greatGrandparent.content,
+                                greatGrandparent.isHtml,
+                                greatGrandparent.isImage,
+                                'great-grandparent',
+                                index,
+                                greatGrandparent.number
+                            );
                             if (node) greatGrandparentsLevel.appendChild(node);
                             index++;
                         }
@@ -621,7 +652,6 @@
                     tree.appendChild(greatGrandparentsLevel);
                 }
 
-                // Grandparents level
                 const grandparentsLevel = document.createElement('div');
                 grandparentsLevel.className = `level ${data.grandparents.length === 1 ? 'single' : data.grandparents.length > 0 ? 'multiple' : ''}`;
                 if (data.grandparents.length > 1) {
@@ -630,7 +660,15 @@
                 if (data.grandparents.length > 0) {
                     let index = 0;
                     for (const grandparent of data.grandparents) {
-                        const node = createNode(grandparent.id, grandparent.content, grandparent.isHtml, grandparent.isImage, 'grandparent', index, grandparent.number);
+                        const node = createNode(
+                            grandparent.id,
+                            grandparent.content,
+                            grandparent.isHtml,
+                            grandparent.isImage,
+                            'grandparent',
+                            index,
+                            grandparent.number
+                        );
                         if (node) grandparentsLevel.appendChild(node);
                         index++;
                     }
@@ -639,7 +677,6 @@
                 }
                 tree.appendChild(grandparentsLevel);
 
-                // Parents level
                 const parentsLevel = document.createElement('div');
                 parentsLevel.className = `level ${data.parents.length === 1 ? 'single' : data.parents.length > 0 ? 'multiple' : ''}`;
                 if (data.parents.length > 1) {
@@ -650,7 +687,15 @@
                     for (const parentId of data.parents) {
                         const parentData = await fetchInscriptionData(parentId, 1);
                         if (parentData) {
-                            const node = createNode(parentId, parentData.content, parentData.isHtml, parentData.isImage, 'parent', index, parentData.number);
+                            const node = createNode(
+                                parentId,
+                                parentData.content,
+                                parentData.isHtml,
+                                parentData.isImage,
+                                'parent',
+                                index,
+                                parentData.number
+                            );
                             if (node) parentsLevel.appendChild(node);
                             index++;
                         }
@@ -660,14 +705,20 @@
                 }
                 tree.appendChild(parentsLevel);
 
-                // Main node level
                 const mainLevel = document.createElement('div');
                 mainLevel.className = 'level single';
-                const mainNode = createNode(inscriptionId, data.content, data.isHtml, data.isImage, 'main', 0, data.number);
+                const mainNode = createNode(
+                    inscriptionId,
+                    data.content,
+                    data.isHtml,
+                    data.isImage,
+                    'main',
+                    0,
+                    data.number
+                );
                 if (mainNode) mainLevel.appendChild(mainNode);
                 tree.appendChild(mainLevel);
 
-                // Children level
                 const childrenLevel = document.createElement('div');
                 childrenLevel.className = `level children ${data.children.length === 1 ? 'single' : data.children.length > 0 ? 'multiple' : ''}`;
                 childrenLevel.id = 'children-level';
