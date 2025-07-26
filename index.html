@@ -1,46 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bitcoin Ordinals Family Tree</title>
     <style>
-        :root {
-            --bg-color: #f0f0f0;
-            --text-color: #333;
-            --node-bg: white;
-            --node-border: #ccc;
-            --line-color: #ccc;
-            --input-bg: white;
-            --input-text: #333;
-            --error-color: red;
-            --link-color: #007bff;
-            --link-hover-color: #0056b3;
-            --satoshi-color: #007bff;
-            --iframe-bg: #6e7c96;
-            --spinner-base: #f3f3f3;
-        }
-        [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --text-color: #e0e0e0;
-            --node-bg: #2a2a2a;
-            --node-border: #444;
-            --line-color: #666;
-            --input-bg: #333;
-            --input-text: #e0e0e0;
-            --error-color: #ff6666;
-            --link-color: #66b3ff;
-            --link-hover-color: #3399ff;
-            --satoshi-color: #66b3ff;
-            --iframe-bg: #6e7c96;
-            --spinner-base: #444;
-        }
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 10px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: #f0f0f0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -56,29 +25,22 @@
             width: 300px;
             font-size: 12px;
             box-sizing: border-box;
-            background-color: var(--input-bg);
-            color: var(--input-text);
-            border: 1px solid var(--node-border);
         }
-        #fetch-btn, #theme-toggle {
+        #fetch-btn {
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
-            background-color: var(--link-color);
+            background-color: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
             margin: 10px;
         }
-        #fetch-btn:hover, #theme-toggle:hover {
-            background-color: var(--link-hover-color);
-        }
-        #theme-toggle {
-            padding: 10px;
-            font-size: 14px;
+        #fetch-btn:hover {
+            background-color: #0056b3;
         }
         #error {
-            color: var(--error-color);
+            color: red;
             margin-top: 10px;
             text-align: center;
             font-size: 14px;
@@ -89,8 +51,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            border: 4px solid var(--spinner-base);
-            border-top: 4px solid var(--link-color);
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
             border-radius: 50%;
             width: 24px;
             height: 24px;
@@ -116,7 +78,7 @@
             left: 50%;
             transform: translateX(-50%);
             width: 1px;
-            background: var(--line-color);
+            background: #ccc;
             z-index: -1;
         }
         .level {
@@ -143,13 +105,13 @@
             top: 50%;
             width: 60%;
             height: 1px;
-            background: var(--line-color);
+            background: #ccc;
             z-index: -1;
         }
         .node {
-            border: 1px solid var(--node-border);
+            border: 1px solid #ccc;
             padding: 10px;
-            background-color: var(--node-bg);
+            background-color: white;
             border-radius: 5px;
             min-width: 180px;
             max-width: 220px;
@@ -170,7 +132,7 @@
             max-width: 160px;
         }
         .node.main {
-            border: 5px solid var(--link-color);
+            border: 5px solid #007bff;
         }
         .node .id {
             word-wrap: break-word;
@@ -179,67 +141,31 @@
             line-height: 0.8;
             margin-bottom: 5px;
             cursor: pointer;
-            color: var(--link-color);
-            position: relative;
+            color: #007bff;
         }
         .node .id:hover {
             text-decoration: underline;
         }
-        .node .id[data-tooltip]:hover:after {
-            content: attr(data-tooltip);
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #333;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            white-space: nowrap;
-            z-index: 10;
-            max-width: 300px;
-            text-overflow: ellipsis;
-            overflow: hidden;
-        }
         .node .label {
             font-size: 12px;
-            color: var(--text-color);
+            color: #333;
             margin-top: 4px;
         }
         .node .number {
             font-size: 12px;
             color: #666;
             margin-top: 4px;
-            position: relative;
-        }
-        .node .number[data-tooltip]:hover:after {
-            content: attr(data-tooltip);
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #333;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            white-space: nowrap;
-            z-index: 10;
-            max-width: 300px;
-            text-overflow: ellipsis;
-            overflow: hidden;
         }
         .node .satoshi-text {
             font-size: 10px;
-            color: var(--satoshi-color);
+            color: #007bff;
             margin-top: 2px;
         }
         .node iframe {
             width: 180px;
             height: 200px;
             border: none;
-            background-color: var(--iframe-bg);
+            background-color: #6e7c96;
             display: block;
             margin: 0 auto;
         }
@@ -258,7 +184,7 @@
         .node.non-main img {
             width: 120px;
             height: 120px;
-            background-color: var(--iframe-bg);
+            background-color: #6f7c96;
         }
         .pagination {
             display: flex;
@@ -270,23 +196,22 @@
             padding: 5px 10px;
             font-size: 14px;
             cursor: pointer;
-            background-color: var(--link-color);
+            background-color: #007bff;
             color: white;
             border: none;
             border-radius: 3px;
         }
         .pagination button:hover {
-            background-color: var(--link-hover-color);
+            background-color: #0056b3;
         }
         .pagination button:disabled {
-            background-color: var(--node-border);
+            background-color: #ccc;
             cursor: not-allowed;
         }
         .pagination span {
             padding: 5px 10px;
             font-size: 14px;
             line-height: 1.5;
-            color: var(--text-color);
         }
     </style>
 </head>
@@ -294,7 +219,6 @@
     <div class="input-container">
         <input type="text" id="inscription-id" placeholder="Enter Inscription ID" value="593015b9a76a11554f0a05c3b77a4723c6baaefb8bdd4175712a7320714b8ea8i0">
         <button id="fetch-btn">Fetch Family Tree</button>
-        <button id="theme-toggle">🌙</button>
         <div id="error"></div>
         <div id="loading" class="loading"></div>
     </div>
@@ -308,20 +232,6 @@
         const CHILDREN_PER_PAGE = 16;
         let currentPage = 1;
         let allChildrenIds = [];
-
-        // Theme toggle logic
-        const themeToggle = document.getElementById('theme-toggle');
-        const html = document.documentElement;
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', currentTheme);
-            themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
-            localStorage.setItem('theme', currentTheme);
-        });
-        // Load saved theme
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        html.setAttribute('data-theme', savedTheme);
-        themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 
         async function fetchInscriptionData(id, depth = 0) {
             if (id === EXCLUDED_ID) {
@@ -521,10 +431,10 @@
             else if (levelType === 'child') label = `Child #${index + 1}`;
             const satoshiText = id === SATOSHI_ID ? '<div class="satoshi-text">(Sent to Satoshi)</div>' : '';
             node.innerHTML = `
-                <span class="id" onclick="buildTree('${id}')" data-tooltip="${id}">${id}</span>
+                <span class="id" onclick="buildTree('${id}')">${id}</span>
                 ${isImage ? `<img src="${content}" alt="Inscription Content">` : `<iframe src="${content}" title="Inscription Content"></iframe>`}
                 <div class="label">${label}</div>
-                <div class="number" data-tooltip="#${number}">#${number}</div>
+                <div class="number">#${number}</div>
                 ${satoshiText}
             `;
             console.log(`Created node for ${id}, label: ${label}, number: #${number}${id === SATOSHI_ID ? ', with Sent to Satoshi' : ''}`);
