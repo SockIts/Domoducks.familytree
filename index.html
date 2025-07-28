@@ -128,8 +128,8 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.55);
         }
         .node.non-main {
-            min-width: 140px;
-            max-width: 180px;
+            min-width: 120px;
+            max-width: 160px;
         }
         .node.main {
             border: 5px solid #007bff;
@@ -137,7 +137,7 @@
         .node .id {
             word-wrap: break-word;
             word-break: break-all;
-            font-size: 10px;
+            font-size: 8px;
             line-height: 0.8;
             margin-bottom: 5px;
             cursor: pointer;
@@ -147,17 +147,17 @@
             text-decoration: underline;
         }
         .node .label {
-            font-size: 12px;
+            font-size: 10px;
             color: #333;
             margin-top: 4px;
         }
         .node .number {
-            font-size: 12px;
+            font-size: 10px;
             color: #666;
             margin-top: 4px;
         }
         .node .satoshi-text {
-            font-size: 10px;
+            font-size: 8px;
             color: #007bff;
             margin-top: 2px;
         }
@@ -171,8 +171,8 @@
             object-fit: contain;
         }
         .node.non-main iframe {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             object-fit: contain;
         }
         .node img {
@@ -185,8 +185,8 @@
             background-color: #6f7c96;
         }
         .node.non-main img {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             background-color: #6f7c96;
             image-rendering: pixelated;
         }
@@ -217,29 +217,36 @@
             font-size: 14px;
             line-height: 1.5;
         }
-        .toggle-container {
-            margin: 10px;
-        }
-        .toggle-container label {
-            margin-right: 10px;
-            font-size: 16px;
-        }
-        .toggle-container select {
-            padding: 5px;
-            font-size: 16px;
-            border-radius: 5px;
+        @media (max-width: 430px) {
+            .node.non-main {
+                min-width: 100px;
+                max-width: 140px;
+            }
+            .node.non-main img {
+                width: 80px;
+                height: 80px;
+            }
+            .node.non-main iframe {
+                width: 80px;
+                height: 80px;
+            }
+            .node .id {
+                font-size: 6px;
+            }
+            .node .label {
+                font-size: 8px;
+            }
+            .node .number {
+                font-size: 8px;
+            }
+            .node .satoshi-text {
+                font-size: 6px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="input-container">
-        <div class="toggle-container">
-            <label for="network-toggle">Network:</label>
-            <select id="network-toggle">
-                <option value="ordinals" selected>Ordinals</option>
-                <option value="fractals">Fractals</option>
-            </select>
-        </div>
         <input type="text" id="inscription-id" placeholder="Enter Inscription ID" value="593015b9a76a11554f0a05c3b77a4723c6baaefb8bdd4175712a7320714b8ea8i0">
         <button id="fetch-btn">Fetch Family Tree</button>
         <div id="error"></div>
@@ -252,15 +259,12 @@
     <script>
         const EXCLUDED_ID = '3076dfe2994ca4b229009eaf5696ad51c4cc68159d13a73a7927a3b8638e411ai0';
         const SATOSHI_ID = '84defb5e7db11f047b4bc58685b65654980be4a55e254a510048a71e0e43e532i0';
-        const CHILDREN_PER_PAGE = 16;
+        const CHILDREN_PER_PAGE = 9;
         const DEFAULT_ORDINALS_ID = '593015b9a76a11554f0a05c3b77a4723c6baaefb8bdd4175712a7320714b8ea8i0';
-        const DEFAULT_FRACTALS_ID = 'a8c39053a557f72619115be77dfeb7bd8506c4d23dee7ddb86d5bc2aea421eeei0';
         let currentPage = 1;
         let allChildrenIds = [];
-        let network = 'ordinals';
 
         function validateInscriptionId(id) {
-            // Check if ID matches 64-character hex + 'i' + number
             const regex = /^[0-9a-fA-F]{64}i\d+$/;
             return regex.test(id);
         }
@@ -302,10 +306,10 @@
                 };
             }
 
-            const baseUrl = network === 'fractals' ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
-            const previewBaseUrl = network === 'fractals' ? 'https://fractal-static.unisat.io/preview' : 'https://ordinals.com/preview';
-            const contentBaseUrl = network === 'fractals' ? 'https://ordinals.fractalbitcoin.io/content' : 'https://ordinals.com/content';
-            const inscriptionUrl = network === 'fractals' ? `https://open-api-fractal.unisat.io/v1/indexer/inscription/info/${id}` : `https://api.hiro.so/ordinals/v1/inscriptions/${id}`;
+            const baseUrl = 'https://ordinals.com';
+            const previewBaseUrl = 'https://ordinals.com/preview';
+            const contentBaseUrl = 'https://ordinals.com/content';
+            const inscriptionUrl = `https://api.hiro.so/ordinals/v1/inscriptions/${id}`;
 
             try {
                 const [parentsResponse, childrenResponse, inscriptionResponse] = await Promise.all([
@@ -498,7 +502,7 @@
             else if (levelType === 'main') label = 'Main Inscription';
             else if (levelType === 'child') label = `Child #${index + 1}`;
             const satoshiText = id === SATOSHI_ID ? '<div class="satoshi-text">(Sent to Satoshi)</div>' : '';
-            const baseUrl = network === 'fractals' ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
+            const baseUrl = 'https://ordinals.com';
             node.innerHTML = `
                 <span class="id" onclick="buildTree('${id}')">${id}</span>
                 ${isImage ? `<img src="${content}" alt="Inscription Content" onerror="this.src='https://placehold.co/150x150?text=Image+Error'; this.onerror=null;" crossOrigin="anonymous">` : `<iframe src="${content}" title="Inscription Content" sandbox="allow-scripts allow-same-origin"></iframe>`}
@@ -744,13 +748,6 @@
                 errorDiv.textContent = 'Please enter a valid Inscription ID';
                 errorDiv.style.display = 'block';
             }
-        });
-
-        document.getElementById('network-toggle').addEventListener('change', (event) => {
-            network = event.target.value;
-            const inscriptionId = network === 'fractals' ? DEFAULT_FRACTALS_ID : DEFAULT_ORDINALS_ID;
-            document.getElementById('inscription-id').value = inscriptionId;
-            buildTree(inscriptionId);
         });
 
         window.onload = () => {
