@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self' 'unsafe-eval' 'unsafe-inline' data: blob:;
-        script-src 'self' 'unsafe-eval' 'unsafe-inline';
-        img-src 'self' data: blob: https://placehold.co https://ordinals.com https://ordinals.fractalbitcoin.io https://fractal-static.unisat.io https://static.unisat.io;
-        frame-src 'self' https://ordinals.com https://ordinals.fractalbitcoin.io https://fractal-static.unisat.io https://static.unisat.io;
-        connect-src 'self' https://ordinals.com https://ordinals.fractalbitcoin.io https://api.hiro.so https://open-api-fractal.unisat.io;
+        script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com;
+        img-src 'self' data: blob: https://placehold.co https://ordinals.com https://fractal-static.unisat.io https://fractal.unisat.io https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app;
+        frame-src 'self' https://ordinals.com https://fractal-static.unisat.io https://fractal.unisat.io https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app;
+        connect-src 'self' https://ordinals.com https://api.hiro.so https://open-api-fractal.unisat.io https://fractal-static.unisat.io https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app;
     ">
     <title>Domoducks Family Tree</title>
     <style>
@@ -134,7 +134,6 @@
         }
         .node .number {
             font-size: 16px;
-            font-weight: bold;
             color: #007bff;
             margin-bottom: 8px;
             cursor: pointer;
@@ -246,22 +245,20 @@
         let allChildrenIds = [];
         let network = 'ordinals';
 
+        const PROXY_URL = 'https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app/.netlify/functions/proxy';
+
         function validateInscriptionId(id) {
             const regex = /^[0-9a-fA-F]{64}i\d+$/;
             return regex.test(id);
         }
 
         async function fetchInscriptionData(id, depth = 0, visited = new Set()) {
-            if (id === EXCLUDED_ID) {
-                console.log(`Skipping excluded inscription ${id}`);
-                return null;
-            }
+            if (id === EXCLUDED_ID) return null;
 
             if (visited.has(id)) {
-                console.log(`Inscription ${id}: Recursive reference detected, using placeholder`);
                 return {
                     id,
-                    content: 'https://placehold.co/150x150?text=Self-Referential',
+                    content: 'https://placehold.co/150x150?text=Self-Ref',
                     isImage: true,
                     isHtml: false,
                     number: 'N/A',
@@ -274,7 +271,6 @@
             visited.add(id);
 
             if (!validateInscriptionId(id)) {
-                console.error(`Invalid inscription ID format: ${id}`);
                 return {
                     id,
                     content: 'https://placehold.co/150x150?text=Invalid+ID',
@@ -288,10 +284,15 @@
                 };
             }
 
-            const baseUrl = network === 'fractals' ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
-            const previewBaseUrl = network === 'fractals' ? 'https://fractal-static.unisat.io/preview' : 'https://ordinals.com/preview';
-            const contentBaseUrl = network === 'fractals' ? 'https://ordinals.fractalbitcoin.io/content' : 'https://ordinals.com/content';
-            const inscriptionUrl = network === 'fractals' 
+            const isFractal = network === 'fractals';
+            const baseUrlRaw = isFractal ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
+            const baseUrl = isFractal ? `${PROXY_URL}?url=${encodeURIComponent(baseUrlRaw)}` : baseUrlRaw;
+
+            const previewBaseUrl = isFractal ? 'https://fractal-static.unisat.io/preview' : 'https://ordinals.com/preview';
+            const contentBaseUrlRaw = isFractal ? 'https://ordinals.fractalbitcoin.io/content' : 'https://ordinals.com/content';
+            const contentBaseUrl = isFractal ? `${PROXY_URL}?url=${encodeURIComponent(contentBaseUrlRaw)}` : contentBaseUrlRaw;
+
+            const inscriptionUrl = isFractal
                 ? `https://open-api-fractal.unisat.io/v1/indexer/inscription/info/${id}`
                 : `https://api.hiro.so/ordinals/v1/inscriptions/${id}`;
 
@@ -336,13 +337,7 @@
                 let inscriptionNumber = 'N/A';
                 if (inscriptionResponse.ok) {
                     const json = await inscriptionResponse.json();
-                    if (network === 'fractals') {
-                        // Fractal API: number is under data.inscriptionNumber
-                        inscriptionNumber = json.data?.inscriptionNumber ?? 'N/A';
-                    } else {
-                        // Ordinals API (Hiro): number is directly in root
-                        inscriptionNumber = json.number ?? 'N/A';
-                    }
+                    inscriptionNumber = isFractal ? (json.data?.inscriptionNumber ?? 'N/A') : (json.number ?? 'N/A');
                 }
 
                 const filteredParents = Array.isArray(parentsData?.ids) ? parentsData.ids.filter(pid => pid !== EXCLUDED_ID) : [];
@@ -442,7 +437,7 @@
 
             node.innerHTML = `
                 <div class="number" onclick="buildTree('${id}')">#${number}</div>
-                ${isImage ? `<img src="${content}" alt="Inscription Content" onerror="this.src='https://placehold.co/150x150?text=Image+Error'; this.onerror=null;">` : `<iframe src="${content}" title="Inscription Content" sandbox="allow-scripts allow-same-origin"></iframe>`}
+                ${isImage ? `<img src="${content}" alt="Inscription Content" onerror="this.src='https://placehold.co/150x150?text=Image+Error';">` : `<iframe src="${content}" title="Inscription Content" sandbox="allow-scripts allow-same-origin"></iframe>`}
                 <div class="label">${label}</div>
                 ${satoshiText}
             `;
@@ -457,26 +452,19 @@
             const prevButton = document.createElement('button');
             prevButton.textContent = 'Previous';
             prevButton.disabled = currentPage === 1;
-            prevButton.addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderChildrenLevel();
-                }
-            });
+            prevButton.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderChildrenLevel(); } });
             paginationDiv.appendChild(prevButton);
+
             const pageSpan = document.createElement('span');
             pageSpan.textContent = `Page ${currentPage} of ${totalPages}`;
             paginationDiv.appendChild(pageSpan);
+
             const nextButton = document.createElement('button');
             nextButton.textContent = 'Next';
             nextButton.disabled = currentPage === totalPages;
-            nextButton.addEventListener('click', () => {
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderChildrenLevel();
-                }
-            });
+            nextButton.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; renderChildrenLevel(); } });
             paginationDiv.appendChild(nextButton);
+
             return paginationDiv;
         }
 
@@ -543,7 +531,7 @@
             }
 
             if (!validateInscriptionId(inscriptionId)) {
-                errorDiv.textContent = 'Invalid Inscription ID format. Please enter a valid 64-character hex ID followed by "i" and a number (e.g., i0).';
+                errorDiv.textContent = 'Invalid Inscription ID format.';
                 errorDiv.style.display = 'block';
                 loadingDiv.style.display = 'none';
                 return;
@@ -554,46 +542,34 @@
                 if (!data) throw new Error('Failed to fetch inscription data');
 
                 const greatGrandparentsLevel = document.createElement('div');
-                greatGrandparentsLevel.className = `level ${data.greatGrandparents.length === 1 ? 'single' : data.greatGrandparents.length > 0 ? 'multiple' : ''}`;
-                if (data.grandparents.length > 0) {
-                    if (data.greatGrandparents.length > 1) {
-                        greatGrandparentsLevel.innerHTML = '<div class="horizontal-line"></div>';
-                    }
-                    if (data.greatGrandparents.length > 0) {
-                        let index = 0;
-                        for (const gg of data.greatGrandparents) {
-                            const node = createNode(gg.id, gg.content, gg.isHtml, gg.isImage, 'great-grandparent', index, gg.number);
-                            if (node) greatGrandparentsLevel.appendChild(node);
-                            index++;
-                        }
-                    } else {
-                        greatGrandparentsLevel.innerHTML = '<div>No Great-grandparents</div>';
-                    }
-                    tree.appendChild(greatGrandparentsLevel);
+                greatGrandparentsLevel.className = `level ${data.greatGrandparents.length > 0 ? 'multiple' : ''}`;
+                if (data.greatGrandparents.length > 1) greatGrandparentsLevel.innerHTML = '<div class="horizontal-line"></div>';
+                if (data.greatGrandparents.length > 0) {
+                    data.greatGrandparents.forEach((gg, i) => {
+                        const node = createNode(gg.id, gg.content, gg.isHtml, gg.isImage, 'great-grandparent', i, gg.number);
+                        if (node) greatGrandparentsLevel.appendChild(node);
+                    });
+                } else if (data.grandparents.length > 0) {
+                    greatGrandparentsLevel.innerHTML = '<div>No Great-grandparents</div>';
                 }
+                if (data.grandparents.length > 0) tree.appendChild(greatGrandparentsLevel);
 
                 const grandparentsLevel = document.createElement('div');
-                grandparentsLevel.className = `level ${data.grandparents.length === 1 ? 'single' : data.grandparents.length > 0 ? 'multiple' : ''}`;
-                if (data.grandparents.length > 1) {
-                    grandparentsLevel.innerHTML = '<div class="horizontal-line"></div>';
-                }
+                grandparentsLevel.className = `level ${data.grandparents.length > 0 ? 'multiple' : ''}`;
+                if (data.grandparents.length > 1) grandparentsLevel.innerHTML = '<div class="horizontal-line"></div>';
                 if (data.grandparents.length > 0) {
-                    let index = 0;
-                    for (const gp of data.grandparents) {
-                        const node = createNode(gp.id, gp.content, gp.isHtml, gp.isImage, 'grandparent', index, gp.number);
+                    data.grandparents.forEach((gp, i) => {
+                        const node = createNode(gp.id, gp.content, gp.isHtml, gp.isImage, 'grandparent', i, gp.number);
                         if (node) grandparentsLevel.appendChild(node);
-                        index++;
-                    }
+                    });
                 } else {
                     grandparentsLevel.innerHTML = '<div>No Grandparents</div>';
                 }
                 tree.appendChild(grandparentsLevel);
 
                 const parentsLevel = document.createElement('div');
-                parentsLevel.className = `level ${data.parents.length === 1 ? 'single' : data.parents.length > 0 ? 'multiple' : ''}`;
-                if (data.parents.length > 1) {
-                    parentsLevel.innerHTML = '<div class="horizontal-line"></div>';
-                }
+                parentsLevel.className = `level ${data.parents.length > 0 ? 'multiple' : ''}`;
+                if (data.parents.length > 1) parentsLevel.innerHTML = '<div class="horizontal-line"></div>';
                 if (data.parents.length > 0) {
                     let index = 0;
                     for (const parentId of data.parents) {
@@ -616,7 +592,7 @@
                 tree.appendChild(mainLevel);
 
                 const childrenLevel = document.createElement('div');
-                childrenLevel.className = `level children ${data.children.length === 1 ? 'single' : data.children.length > 0 ? 'multiple' : ''}`;
+                childrenLevel.className = `level children ${data.children.length > 0 ? 'multiple' : ''}`;
                 childrenLevel.id = 'children-level';
                 tree.appendChild(childrenLevel);
                 allChildrenIds = data.children;
@@ -624,7 +600,7 @@
 
             } catch (error) {
                 console.error('Build error:', error);
-                errorDiv.textContent = `Failed to build tree: ${error.message}`;
+                errorDiv.textContent = `Failed: ${error.message}`;
                 errorDiv.style.display = 'block';
             } finally {
                 loadingDiv.style.display = 'none';
@@ -633,19 +609,12 @@
 
         document.getElementById('fetch-btn').addEventListener('click', () => {
             const inscriptionId = document.getElementById('inscription-id').value.trim();
-            if (inscriptionId) {
-                buildTree(inscriptionId);
-            } else {
-                document.getElementById('error').textContent = 'Please enter a valid Inscription ID';
-                document.getElementById('error').style.display = 'block';
-            }
+            if (inscriptionId) buildTree(inscriptionId);
         });
 
         document.getElementById('reset-btn').addEventListener('click', () => {
             const defaultId = network === 'fractals' ? DEFAULT_FRACTALS_ID : DEFAULT_ORDINALS_ID;
             document.getElementById('inscription-id').value = defaultId;
-            document.getElementById('error').textContent = '';
-            document.getElementById('error').style.display = 'none';
             buildTree(defaultId);
         });
 
@@ -657,10 +626,7 @@
         });
 
         window.onload = () => {
-            const inscriptionId = document.getElementById('inscription-id').value.trim();
-            if (inscriptionId) {
-                buildTree(inscriptionId);
-            }
+            buildTree(document.getElementById('inscription-id').value.trim());
         };
     </script>
 </body>
