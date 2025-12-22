@@ -6,9 +6,9 @@
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self' 'unsafe-eval' 'unsafe-inline' data: blob:;
         script-src 'self' 'unsafe-eval' 'unsafe-inline';
-        img-src 'self' data: blob: https://placehold.co https://ordinals.com https://ordinals.fractalbitcoin.io https://fractal-static.unisat.io https://static.unisat.io;
-        frame-src 'self' https://ordinals.com https://ordinals.fractalbitcoin.io https://fractal-static.unisat.io https://static.unisat.io;
-        connect-src 'self' https://ordinals.com https://ordinals.fractalbitcoin.io https://api.hiro.so https://open-api-fractal.unisat.io;
+        img-src 'self' data: blob: https://placehold.co https://ordinals.com https://fractal.unisat.io https://fractal-static.unisat.io;
+        frame-src 'self' https://ordinals.com https://fractal.unisat.io https://fractal-static.unisat.io;
+        connect-src 'self' https://ordinals.com https://fractal.unisat.io https://api.hiro.so https://open-api-fractal.unisat.io https://fractal-static.unisat.io;
     ">
     <title>Domoducks Family Tree</title>
     <style>
@@ -134,6 +134,7 @@
         }
         .node .number {
             font-size: 16px;
+            font-weight: bold;
             color: #007bff;
             margin-bottom: 8px;
             cursor: pointer;
@@ -287,9 +288,9 @@
                 };
             }
 
-            const baseUrl = network === 'fractals' ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
+            const baseUrl = network === 'fractals' ? 'https://fractal.unisat.io' : 'https://ordinals.com';
             const previewBaseUrl = network === 'fractals' ? 'https://fractal-static.unisat.io/preview' : 'https://ordinals.com/preview';
-            const contentBaseUrl = network === 'fractals' ? 'https://ordinals.fractalbitcoin.io/content' : 'https://ordinals.com/content';
+            const contentBaseUrl = network === 'fractals' ? 'https://fractal.unisat.io/content' : 'https://ordinals.com/content';
             const inscriptionUrl = network === 'fractals' 
                 ? `https://open-api-fractal.unisat.io/v1/indexer/inscription/info/${id}`
                 : `https://api.hiro.so/ordinals/v1/inscriptions/${id}`;
@@ -336,10 +337,8 @@
                 if (inscriptionResponse.ok) {
                     const json = await inscriptionResponse.json();
                     if (network === 'fractals') {
-                        // Fractal API: number is under data.inscriptionNumber
                         inscriptionNumber = json.data?.inscriptionNumber ?? 'N/A';
                     } else {
-                        // Ordinals API (Hiro): number is directly in root
                         inscriptionNumber = json.number ?? 'N/A';
                     }
                 }
@@ -449,6 +448,10 @@
             return node;
         }
 
+        // The rest of the functions (renderPagination, renderChildrenLevel, buildTree, event listeners) remain the same as in the previous version.
+
+        // ... (copy from previous code for completeness)
+
         function renderPagination(totalChildren) {
             const totalPages = Math.ceil(totalChildren / CHILDREN_PER_PAGE);
             const paginationDiv = document.createElement('div');
@@ -522,6 +525,7 @@
         }
 
         async function buildTree(inscriptionId) {
+            // ... (same as previous)
             const tree = document.getElementById('tree');
             const errorDiv = document.getElementById('error');
             const loadingDiv = document.getElementById('loading');
@@ -551,6 +555,8 @@
             try {
                 const data = await fetchInscriptionData(inscriptionId);
                 if (!data) throw new Error('Failed to fetch inscription data');
+
+                // (rest of buildTree same as previous version)
 
                 const greatGrandparentsLevel = document.createElement('div');
                 greatGrandparentsLevel.className = `level ${data.greatGrandparents.length === 1 ? 'single' : data.greatGrandparents.length > 0 ? 'multiple' : ''}`;
@@ -629,6 +635,8 @@
                 loadingDiv.style.display = 'none';
             }
         }
+
+        // Event listeners (same as previous)
 
         document.getElementById('fetch-btn').addEventListener('click', () => {
             const inscriptionId = document.getElementById('inscription-id').value.trim();
