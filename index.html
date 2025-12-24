@@ -234,27 +234,29 @@
     <div class="tree" id="tree">
         <div class="vertical-line"></div>
     </div>
-
     <script>
         const EXCLUDED_ID = '3076dfe2994ca4b229009eaf5696ad51c4cc68159d13a73a7927a3b8638e411ai0';
-        const SATOSHI_ID = '84defb5e7db11f047b4bc58685b65654980be4a55e254a510048a71e0e43e532i0';
+        // Added multiple IDs that should display "(Sent to Satoshi)"
+        const SATOSHI_IDS = [
+            '84defb5e7db11f047b4bc58685b65654980be4a55e254a510048a71e0e43e532i0', // original
+            '3f409c1e27eb0ef45b2f5c0e099cd2320f055ec9fd60c5becbb9830533fb155bi0',
+            '212957fe226d237522049fa2d3cf47337ae8bc6d2e90ca21ca4a188e2933bdb2i0',
+            '5564e0402cd25efb8339715598946bb11d62120923b98be7bc4ed73d82928bf8i0',
+            '895060f4d9347d6f07be07cf4c0b9990abe8b2fb97db750b85eee240e07de1adi0'
+        ];
         const CHILDREN_PER_PAGE = 16;
         const DEFAULT_ORDINALS_ID = '593015b9a76a11554f0a05c3b77a4723c6baaefb8bdd4175712a7320714b8ea8i0';
         const DEFAULT_FRACTALS_ID = 'a8c39053a557f72619115be77dfeb7bd8506c4d23dee7ddb86d5bc2aea421eeei0';
         let currentPage = 1;
         let allChildrenIds = [];
         let network = 'ordinals';
-
         const PROXY_URL = 'https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app/.netlify/functions/proxy';
-
         function validateInscriptionId(id) {
             const regex = /^[0-9a-fA-F]{64}i\d+$/;
             return regex.test(id);
         }
-
         async function fetchInscriptionData(id, depth = 0, visited = new Set()) {
             if (id === EXCLUDED_ID) return null;
-
             if (visited.has(id)) {
                 return {
                     id,
@@ -269,7 +271,6 @@
                 };
             }
             visited.add(id);
-
             if (!validateInscriptionId(id)) {
                 return {
                     id,
@@ -283,30 +284,24 @@
                     children: []
                 };
             }
-
             const isFractal = network === 'fractals';
             const baseUrlRaw = isFractal ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
             const baseUrl = isFractal ? `${PROXY_URL}?url=${encodeURIComponent(baseUrlRaw)}` : baseUrlRaw;
-
             const previewBaseUrl = isFractal ? 'https://fractal-static.unisat.io/preview' : 'https://ordinals.com/preview';
             const contentBaseUrlRaw = isFractal ? 'https://ordinals.fractalbitcoin.io/content' : 'https://ordinals.com/content';
             const contentBaseUrl = isFractal ? `${PROXY_URL}?url=${encodeURIComponent(contentBaseUrlRaw)}` : contentBaseUrlRaw;
-
             const inscriptionUrl = isFractal
                 ? `https://open-api-fractal.unisat.io/v1/indexer/inscription/info/${id}`
                 : `https://api.hiro.so/ordinals/v1/inscriptions/${id}`;
-
             try {
                 const [parentsResponse, childrenResponse, inscriptionResponse] = await Promise.all([
                     fetch(`${baseUrl}/r/parents/${id}`).catch(e => ({ ok: false })),
                     depth === 0 ? fetch(`${baseUrl}/r/children/${id}`).catch(e => ({ ok: false })) : { ok: false },
                     fetch(inscriptionUrl).catch(e => ({ ok: false }))
                 ]);
-
                 let content = `${previewBaseUrl}/${id}`;
                 let isImage = true;
                 let isHtml = false;
-
                 try {
                     const previewResponse = await fetch(content, { method: 'HEAD' });
                     const previewContentType = previewResponse.headers.get('content-type');
@@ -315,7 +310,6 @@
                     } else if (previewContentType && !previewContentType.includes('image/')) {
                         content = `${contentBaseUrl}/${id}`;
                     }
-
                     const contentResponse = await fetch(content, { method: 'HEAD' });
                     const contentContentType = contentResponse.headers.get('content-type');
                     if (contentResponse.status >= 400) {
@@ -330,19 +324,15 @@
                     content = 'https://placehold.co/150x150?text=Error';
                     isImage = true;
                 }
-
                 const parentsData = parentsResponse.ok ? await parentsResponse.json().catch(() => ({ ids: [] })) : { ids: [] };
                 const childrenData = depth === 0 && childrenResponse.ok ? await childrenResponse.json().catch(() => ({ ids: [] })) : { ids: [] };
-
                 let inscriptionNumber = 'N/A';
                 if (inscriptionResponse.ok) {
                     const json = await inscriptionResponse.json();
                     inscriptionNumber = isFractal ? (json.data?.inscriptionNumber ?? 'N/A') : (json.number ?? 'N/A');
                 }
-
                 const filteredParents = Array.isArray(parentsData?.ids) ? parentsData.ids.filter(pid => pid !== EXCLUDED_ID) : [];
                 const filteredChildren = Array.isArray(childrenData?.ids) ? childrenData.ids.filter(cid => cid !== EXCLUDED_ID) : [];
-
                 let grandparents = [];
                 let greatGrandparents = [];
                 if (depth < 1 && filteredParents.length > 0) {
@@ -391,7 +381,6 @@
                         greatGrandparents = Array.from(greatGrandparentMap.values());
                     }
                 }
-
                 return {
                     id,
                     content,
@@ -418,33 +407,27 @@
                 };
             }
         }
-
         function createNode(id, content, isHtml, isImage, levelType, index, number) {
             if (id === EXCLUDED_ID) return null;
-
             const node = document.createElement('div');
             node.className = `node ${levelType === 'main' ? 'main' : 'non-main'}`;
             node.dataset.id = id;
-
             let label = '';
             if (levelType === 'great-grandparent') label = `Great-Grandparent #${index + 1}`;
             else if (levelType === 'grandparent') label = `Grandparent #${index + 1}`;
             else if (levelType === 'parent') label = `Parent #${index + 1}`;
             else if (levelType === 'main') label = 'Main Inscription';
             else if (levelType === 'child') label = `Child #${index + 1}`;
-
-            const satoshiText = id === SATOSHI_ID ? '<div class="satoshi-text">(Sent to Satoshi)</div>' : '';
-
+            // Updated to check array
+            const satoshiText = SATOSHI_IDS.includes(id) ? '<div class="satoshi-text">(Sent to Satoshi)</div>' : '';
             node.innerHTML = `
                 <div class="number" onclick="buildTree('${id}')">#${number}</div>
                 ${isImage ? `<img src="${content}" alt="Inscription Content" onerror="this.src='https://placehold.co/150x150?text=Image+Error';">` : `<iframe src="${content}" title="Inscription Content" sandbox="allow-scripts allow-same-origin"></iframe>`}
                 <div class="label">${label}</div>
                 ${satoshiText}
             `;
-
             return node;
         }
-
         function renderPagination(totalChildren) {
             const totalPages = Math.ceil(totalChildren / CHILDREN_PER_PAGE);
             const paginationDiv = document.createElement('div');
@@ -454,34 +437,27 @@
             prevButton.disabled = currentPage === 1;
             prevButton.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderChildrenLevel(); } });
             paginationDiv.appendChild(prevButton);
-
             const pageSpan = document.createElement('span');
             pageSpan.textContent = `Page ${currentPage} of ${totalPages}`;
             paginationDiv.appendChild(pageSpan);
-
             const nextButton = document.createElement('button');
             nextButton.textContent = 'Next';
             nextButton.disabled = currentPage === totalPages;
             nextButton.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; renderChildrenLevel(); } });
             paginationDiv.appendChild(nextButton);
-
             return paginationDiv;
         }
-
         async function renderChildrenLevel() {
             const childrenLevel = document.getElementById('children-level');
             if (!childrenLevel) return;
-
             try {
                 childrenLevel.innerHTML = '';
                 if (allChildrenIds.length > 1) {
                     childrenLevel.innerHTML = '<div class="horizontal-line"></div>';
                 }
-
                 const startIndex = (currentPage - 1) * CHILDREN_PER_PAGE;
                 const endIndex = Math.min(startIndex + CHILDREN_PER_PAGE, allChildrenIds.length);
                 const paginatedChildIds = allChildrenIds.slice(startIndex, endIndex);
-
                 if (paginatedChildIds.length > 0) {
                     let index = startIndex;
                     for (const childId of paginatedChildIds) {
@@ -495,10 +471,8 @@
                 } else {
                     childrenLevel.innerHTML = '<div>No children</div>';
                 }
-
                 const existingPagination = document.getElementById('pagination');
                 if (existingPagination) existingPagination.remove();
-
                 if (allChildrenIds.length > CHILDREN_PER_PAGE) {
                     const paginationDiv = renderPagination(allChildrenIds.length);
                     paginationDiv.id = 'pagination';
@@ -509,7 +483,6 @@
                 childrenLevel.innerHTML = '<div>Error loading children</div>';
             }
         }
-
         async function buildTree(inscriptionId) {
             const tree = document.getElementById('tree');
             const errorDiv = document.getElementById('error');
@@ -518,29 +491,24 @@
             errorDiv.textContent = '';
             errorDiv.style.display = 'none';
             loadingDiv.style.display = 'block';
-
             currentPage = 1;
             allChildrenIds = [];
             document.getElementById('inscription-id').value = inscriptionId;
-
             if (inscriptionId === EXCLUDED_ID) {
                 errorDiv.textContent = 'This inscription ID is excluded from display.';
                 errorDiv.style.display = 'block';
                 loadingDiv.style.display = 'none';
                 return;
             }
-
             if (!validateInscriptionId(inscriptionId)) {
                 errorDiv.textContent = 'Invalid Inscription ID format.';
                 errorDiv.style.display = 'block';
                 loadingDiv.style.display = 'none';
                 return;
             }
-
             try {
                 const data = await fetchInscriptionData(inscriptionId);
                 if (!data) throw new Error('Failed to fetch inscription data');
-
                 const greatGrandparentsLevel = document.createElement('div');
                 greatGrandparentsLevel.className = `level ${data.greatGrandparents.length > 0 ? 'multiple' : ''}`;
                 if (data.greatGrandparents.length > 1) greatGrandparentsLevel.innerHTML = '<div class="horizontal-line"></div>';
@@ -553,7 +521,6 @@
                     greatGrandparentsLevel.innerHTML = '<div>No Great-grandparents</div>';
                 }
                 if (data.grandparents.length > 0) tree.appendChild(greatGrandparentsLevel);
-
                 const grandparentsLevel = document.createElement('div');
                 grandparentsLevel.className = `level ${data.grandparents.length > 0 ? 'multiple' : ''}`;
                 if (data.grandparents.length > 1) grandparentsLevel.innerHTML = '<div class="horizontal-line"></div>';
@@ -566,7 +533,6 @@
                     grandparentsLevel.innerHTML = '<div>No Grandparents</div>';
                 }
                 tree.appendChild(grandparentsLevel);
-
                 const parentsLevel = document.createElement('div');
                 parentsLevel.className = `level ${data.parents.length > 0 ? 'multiple' : ''}`;
                 if (data.parents.length > 1) parentsLevel.innerHTML = '<div class="horizontal-line"></div>';
@@ -584,20 +550,17 @@
                     parentsLevel.innerHTML = '<div>No Parents</div>';
                 }
                 tree.appendChild(parentsLevel);
-
                 const mainLevel = document.createElement('div');
                 mainLevel.className = 'level single';
                 const mainNode = createNode(inscriptionId, data.content, data.isHtml, data.isImage, 'main', 0, data.number);
                 if (mainNode) mainLevel.appendChild(mainNode);
                 tree.appendChild(mainLevel);
-
                 const childrenLevel = document.createElement('div');
                 childrenLevel.className = `level children ${data.children.length > 0 ? 'multiple' : ''}`;
                 childrenLevel.id = 'children-level';
                 tree.appendChild(childrenLevel);
                 allChildrenIds = data.children;
                 await renderChildrenLevel();
-
             } catch (error) {
                 console.error('Build error:', error);
                 errorDiv.textContent = `Failed: ${error.message}`;
@@ -606,25 +569,21 @@
                 loadingDiv.style.display = 'none';
             }
         }
-
         document.getElementById('fetch-btn').addEventListener('click', () => {
             const inscriptionId = document.getElementById('inscription-id').value.trim();
             if (inscriptionId) buildTree(inscriptionId);
         });
-
         document.getElementById('reset-btn').addEventListener('click', () => {
             const defaultId = network === 'fractals' ? DEFAULT_FRACTALS_ID : DEFAULT_ORDINALS_ID;
             document.getElementById('inscription-id').value = defaultId;
             buildTree(defaultId);
         });
-
         document.getElementById('network-toggle').addEventListener('change', (event) => {
             network = event.target.value;
             const inscriptionId = network === 'fractals' ? DEFAULT_FRACTALS_ID : DEFAULT_ORDINALS_ID;
             document.getElementById('inscription-id').value = inscriptionId;
             buildTree(inscriptionId);
         });
-
         window.onload = () => {
             buildTree(document.getElementById('inscription-id').value.trim());
         };
