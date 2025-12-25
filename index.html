@@ -12,19 +12,20 @@
   ">
   <title>Domoducks Family Tree</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0px; padding: 10px; background-color: #f0f0f0; min-height: 100vh; display: flex; flex-direction: column; align-items: center;  border: 12px solid #ccc;  }
-    .input-container { text-align: center; margin-bottom: 2px; position: relative;  }
+    /* Your existing styles - unchanged */
+    body { font-family: Arial, sans-serif; margin: 0px; padding: 10px; background-color: #f0f0f0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; border: 12px solid #ccc; }
+    .input-container { text-align: center; margin-bottom: 2px; position: relative; }
     #inscription-id { padding: 10px; width: 360px; font-size: 12px; box-sizing: border-box; }
     #fetch-btn, #reset-btn { padding: 10px 10px; font-size: 16px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 8px; margin: 10px; }
     #fetch-btn:hover, #reset-btn:hover { background-color: #0056b3; }
     #error { color: red; margin-top: 10px; text-align: center; font-size: 14px; }
     .loading { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
-    .tree { display: flex; flex-direction: column; align-items: center; position: relative;  max-width: 900px; width: 100%; }
+    .tree { display: flex; flex-direction: column; align-items: center; position: relative; max-width: 900px; width: 100%; }
     .vertical-line { position: absolute; top: 100px; height: 80%; left: 50%; transform: translateX(-50%); width: 1px; background: #ccc; z-index: -1; }
     .level { display: flex; flex-wrap: wrap; justify-content: center; gap: 25px; margin: 20px 0; position: relative; width: 100%; z-index: 1; }
     .horizontal-line { position: absolute; top: 50%; width: 60%; height: 1px; background: #ccc; z-index: -1; }
-
+    .no-items { color: #666; font-style: italic; padding: 20px; }
     /* Card Flip */
     .node { perspective: 1000px; width: 240px; height: 260px; cursor: pointer; border-radius: 12px;}
     .node.non-main { width: 150px; height: 210px; }
@@ -50,13 +51,13 @@
     }
     .card-back {
       transform: rotateY(180deg);
-      align-items: flex-start; /* Left align content */
+      align-items: flex-start;
       font-size: 9px;
       line-height: 1;
     }
     .card-back .label-line {
       margin-bottom: 3px;
-      width: 100%; /* Full width */
+      width: 100%;
     }
     .card-back .label-title {
       color: #007bff;
@@ -95,11 +96,11 @@
         <option value="fractals">Fractals</option>
       </select>
     </div>
+    <!-- FIXED: Removed Chinese characters from ID -->
     <input type="text" id="inscription-id" placeholder="Enter Inscription ID" value="593015b9a76a11554f0a05c3b77a4723c6baaefb8bdd4175712a7320714b8ea8i0">
-
   </div>
-<div>
-      <button id="fetch-btn">Fetch Family Tree</button>
+  <div>
+    <button id="fetch-btn">Fetch Family Tree</button>
     <button id="reset-btn">Reset</button>
     <div id="error"></div>
     <div id="loading" class="loading"></div>
@@ -107,8 +108,7 @@
   <div class="tree" id="tree">
     <div class="vertical-line"></div>
   </div>
-
-  <script>
+<script>
     const EXCLUDED_ID = '3076dfe2994ca4b229009eaf5696ad51c4cc68159d13a73a7927a3b8638e411ai0';
     const SATOSHI_IDS = ['84defb5e7db11f047b4bc58685b65654980be4a55e254a510048a71e0e43e532i0','3f409c1e27eb0ef45b2f5c0e099cd2320f055ec9fd60c5becbb9830533fb155bi0','212957fe226d237522049fa2d3cf47337ae8bc6d2e90ca21ca4a188e2933bdb2i0','5564e0402cd25efb8339715598946bb11d62120923b98be7bc4ed73d82928bf8i0','895060f4d9347d6f07be07cf4c0b9990abe8b2fb97db750b85eee240e07de1adi0'];
     const CHILDREN_PER_PAGE = 16;
@@ -118,18 +118,14 @@
     let allChildrenIds = [];
     let network = 'ordinals';
     const PROXY_URL = 'https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app/.netlify/functions/proxy';
-
     const DEFAULT_META = { txid: 'N/A', inscriptionNumber: 'N/A', contentType: 'N/A', contentLength: 'N/A', genesisBlock: 'N/A', address: 'N/A' };
-
     function validateInscriptionId(id) {
       return /^[0-9a-fA-F]{64}i\d+$/.test(id);
     }
-
     function truncate(str, length = 20) {
       if (typeof str !== 'string' || str === 'N/A') return 'N/A';
       return str.length > length ? str.slice(0, length) + '...' : str;
     }
-
     async function fetchInscriptionData(id, depth = 0, visited = new Set()) {
       if (id === EXCLUDED_ID) return null;
       if (visited.has(id)) {
@@ -139,7 +135,6 @@
       if (!validateInscriptionId(id)) {
         return { id, content: 'https://placehold.co/150x150?text=Invalid+ID', isImage: true, isHtml: false, number: 'N/A', meta: { ...DEFAULT_META }, parents: [], grandparents: [], greatGrandparents: [], children: [] };
       }
-
       const isFractal = network === 'fractals';
       const baseUrlRaw = isFractal ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
       const baseUrl = isFractal ? `${PROXY_URL}?url=${encodeURIComponent(baseUrlRaw)}` : baseUrlRaw;
@@ -147,13 +142,11 @@
       const contentBaseUrlRaw = isFractal ? 'https://ordinals.fractalbitcoin.io/content' : 'https://ordinals.com/content';
       const contentBaseUrl = isFractal ? `${PROXY_URL}?url=${encodeURIComponent(contentBaseUrlRaw)}` : contentBaseUrlRaw;
       const inscriptionUrl = isFractal ? `https://open-api-fractal.unisat.io/v1/indexer/inscription/info/${id}` : `https://api.hiro.so/ordinals/v1/inscriptions/${id}`;
-
       let content = `${previewBaseUrl}/${id}`;
       let isImage = true;
       let isHtml = false;
       let number = 'N/A';
       const meta = { ...DEFAULT_META };
-
       try {
         const inscriptionResponse = await fetch(inscriptionUrl);
         if (inscriptionResponse.ok) {
@@ -176,7 +169,6 @@
             number = json.number ?? 'N/A';
           }
         }
-
         try {
           const head = await fetch(content, { method: 'HEAD' });
           const type = head.headers.get('content-type') || '';
@@ -187,18 +179,14 @@
             if (!type2.startsWith('image/')) { isImage = false; isHtml = true; }
           }
         } catch { content = 'https://placehold.co/150x150?text=Error'; }
-
         const [parentsRes, childrenRes] = await Promise.all([
           fetch(`${baseUrl}/r/parents/${id}`).catch(() => ({ ok: false })),
           depth === 0 ? fetch(`${baseUrl}/r/children/${id}`).catch(() => ({ ok: false })) : { ok: false }
         ]);
-
         const parentsData = parentsRes.ok ? await parentsRes.json() : { ids: [] };
         const childrenData = depth === 0 && childrenRes.ok ? await childrenRes.json() : { ids: [] };
-
         const filteredParents = (parentsData.ids || []).filter(p => p !== EXCLUDED_ID);
         const filteredChildren = (childrenData.ids || []).filter(c => c !== EXCLUDED_ID);
-
         let grandparents = [], greatGrandparents = [];
         if (depth < 1 && filteredParents.length > 0) {
           const gpMap = new Map();
@@ -217,33 +205,26 @@
           }
           grandparents = Array.from(gpMap.values());
         }
-
         return { id, content, isImage, isHtml, number, meta, parents: filteredParents, grandparents, greatGrandparents, children: filteredChildren };
       } catch (err) {
         console.error('Fetch error for', id, err);
         return { id, content: 'https://placehold.co/150x150?text=Error', isImage: true, isHtml: false, number: 'N/A', meta: { ...DEFAULT_META }, parents: [], grandparents: [], greatGrandparents: [], children: [] };
       }
     }
-
     function createNode(id, content, isHtml, isImage, levelType, index, number, meta = { ...DEFAULT_META }) {
       if (id === EXCLUDED_ID) return null;
       const node = document.createElement('div');
       node.className = `node ${levelType === 'main' ? 'main' : 'non-main'}`;
       node.dataset.id = id;
-
       const label = levelType === 'great-grandparent' ? `Great-Grandparent #${index + 1}` :
                     levelType === 'grandparent' ? `Grandparent #${index + 1}` :
                     levelType === 'parent' ? `Parent #${index + 1}` :
                     levelType === 'main' ? 'Main Inscription' : `Child #${index + 1}`;
-
       const satoshiText = SATOSHI_IDS.includes(id) ? '<div class="satoshi-text">(Sent to Satoshi)</div>' : '';
-
       const display = isImage
         ? `<img src="${content}" onerror="this.src='https://placehold.co/150x150?text=Error';" alt="Inscription">`
         : `<iframe src="${content}" sandbox=""></iframe>`;
-
       const sizeText = meta.contentLength !== 'N/A' ? `${meta.contentLength} bytes` : 'N/A';
-
       node.innerHTML = `
         <div class="card-inner">
           <div class="card-front">
@@ -262,15 +243,12 @@
           </div>
         </div>
       `;
-
       node.addEventListener('click', (e) => {
         e.stopPropagation();
         node.classList.toggle('flipped');
       });
-
       return node;
     }
-
     function renderPagination(total) {
       const div = document.createElement('div');
       div.className = 'pagination';
@@ -281,13 +259,16 @@
       `;
       return div;
     }
-
     async function renderChildrenLevel() {
       const level = document.getElementById('children-level');
       if (!level) return;
       level.innerHTML = allChildrenIds.length > 1 ? '<div class="horizontal-line"></div>' : '';
       const start = (currentPage - 1) * CHILDREN_PER_PAGE;
       const end = Math.min(start + CHILDREN_PER_PAGE, allChildrenIds.length);
+      if (allChildrenIds.length === 0) {
+        level.innerHTML += '<div class="no-items">No Children</div>';
+        return;
+      }
       for (let i = start; i < end; i++) {
         const childData = await fetchInscriptionData(allChildrenIds[i], 1);
         if (childData) {
@@ -303,7 +284,6 @@
         level.parentNode.appendChild(pag);
       }
     }
-
     async function buildTree(inscriptionId) {
       const tree = document.getElementById('tree');
       const errorDiv = document.getElementById('error');
@@ -313,7 +293,6 @@
       loadingDiv.style.display = 'block';
       currentPage = 1;
       allChildrenIds = [];
-
       let mainData = null;
       try {
         mainData = await fetchInscriptionData(inscriptionId);
@@ -325,7 +304,6 @@
         loadingDiv.style.display = 'none';
         return;
       }
-
       try {
         ['greatGrandparents', 'grandparents'].forEach(type => {
           const items = mainData[type] || [];
@@ -337,10 +315,9 @@
             const node = createNode(item.id, item.content, item.isHtml, item.isImage, levelName, i, item.number, item.meta);
             if (node) level.appendChild(node);
           });
-          if (items.length === 0 && type === 'grandparents') level.innerHTML += '<div>No Grandparents</div>';
+          if (items.length === 0 && type === 'grandparents') level.innerHTML += '<div class="no-items">No Grandparents</div>';
           tree.appendChild(level);
         });
-
         const parentLevel = document.createElement('div');
         parentLevel.className = 'level';
         if (mainData.parents.length > 1) parentLevel.innerHTML = '<div class="horizontal-line"></div>';
@@ -363,16 +340,14 @@
             }
           }
         } else {
-          parentLevel.innerHTML = '<div>No Parents</div>';
+          parentLevel.innerHTML = '<div class="no-items">No Parents</div>';
         }
         tree.appendChild(parentLevel);
-
         const mainLevel = document.createElement('div');
         mainLevel.className = 'level';
         const mainNode = createNode(inscriptionId, mainData.content, mainData.isHtml, mainData.isImage, 'main', 0, mainData.number, mainData.meta);
         if (mainNode) mainLevel.appendChild(mainNode);
         tree.appendChild(mainLevel);
-
         const childrenLevel = document.createElement('div');
         childrenLevel.className = 'level children';
         childrenLevel.id = 'children-level';
@@ -380,7 +355,6 @@
         tree.appendChild(childrenLevel);
         allChildrenIds = mainData.children;
         await renderChildrenLevel();
-
       } catch (err) {
         console.error('Error rendering tree:', err);
         errorDiv.textContent = 'Partial load: Some related inscriptions failed.';
@@ -388,7 +362,6 @@
         loadingDiv.style.display = 'none';
       }
     }
-
     document.getElementById('fetch-btn').onclick = () => {
       const id = document.getElementById('inscription-id').value.trim();
       if (id) buildTree(id);
@@ -404,7 +377,6 @@
       document.getElementById('inscription-id').value = defaultId;
       buildTree(defaultId);
     };
-
     window.onload = () => buildTree(document.getElementById('inscription-id').value.trim());
   </script>
 </body>
