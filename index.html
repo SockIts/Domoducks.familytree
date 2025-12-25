@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,15 +12,15 @@
   ">
   <title>Domoducks Family Tree</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background-color: #f0f0f0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
-    .input-container { text-align: center; margin-bottom: 20px; position: relative; }
-    #inscription-id { padding: 10px; width: 300px; font-size: 12px; box-sizing: border-box; }
-    #fetch-btn, #reset-btn { padding: 10px 10px; font-size: 16px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 5px; margin: 10px; }
+    body { font-family: Arial, sans-serif; margin: 0px; padding: 10px; background-color: #f0f0f0; min-height: 100vh; display: flex; flex-direction: column; align-items: center;  border: 12px solid #ccc;  }
+    .input-container { text-align: center; margin-bottom: 2px; position: relative;  }
+    #inscription-id { padding: 10px; width: 360px; font-size: 12px; box-sizing: border-box; }
+    #fetch-btn, #reset-btn { padding: 10px 10px; font-size: 16px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 8px; margin: 10px; }
     #fetch-btn:hover, #reset-btn:hover { background-color: #0056b3; }
     #error { color: red; margin-top: 10px; text-align: center; font-size: 14px; }
     .loading { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
-    .tree { display: flex; flex-direction: column; align-items: center; position: relative; margin: 10px auto; max-width: 900px; width: 100%; }
+    .tree { display: flex; flex-direction: column; align-items: center; position: relative;  max-width: 900px; width: 100%; }
     .vertical-line { position: absolute; top: 100px; height: 80%; left: 50%; transform: translateX(-50%); width: 1px; background: #ccc; z-index: -1; }
     .level { display: flex; flex-wrap: wrap; justify-content: center; gap: 25px; margin: 20px 0; position: relative; width: 100%; z-index: 1; }
     .horizontal-line { position: absolute; top: 50%; width: 60%; height: 1px; background: #ccc; z-index: -1; }
@@ -97,12 +96,14 @@
       </select>
     </div>
     <input type="text" id="inscription-id" placeholder="Enter Inscription ID" value="593015b9a76a11554f0a05c3b77a4723c6baaefb8bdd4175712a7320714b8ea8i0">
-    <button id="fetch-btn">Fetch Family Tree</button>
+
+  </div>
+<div>
+      <button id="fetch-btn">Fetch Family Tree</button>
     <button id="reset-btn">Reset</button>
     <div id="error"></div>
     <div id="loading" class="loading"></div>
   </div>
-
   <div class="tree" id="tree">
     <div class="vertical-line"></div>
   </div>
