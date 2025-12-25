@@ -1,592 +1,409 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self' 'unsafe-eval' 'unsafe-inline' data: blob:;
-        script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com;
-        img-src 'self' data: blob: https://placehold.co https://ordinals.com https://fractal-static.unisat.io https://fractal.unisat.io https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app;
-        frame-src 'self' https://ordinals.com https://fractal-static.unisat.io https://fractal.unisat.io https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app;
-        connect-src 'self' https://ordinals.com https://api.hiro.so https://open-api-fractal.unisat.io https://fractal-static.unisat.io https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app;
-    ">
-    <title>Domoducks Family Tree</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 10px;
-            background-color: #f0f0f0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .input-container {
-            text-align: center;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        #inscription-id {
-            padding: 10px;
-            width: 300px;
-            font-size: 12px;
-            box-sizing: border-box;
-        }
-        #fetch-btn, #reset-btn {
-            padding: 10px 10px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            margin: 10px;
-        }
-        #fetch-btn:hover, #reset-btn:hover {
-            background-color: #0056b3;
-        }
-        #error {
-            color: red;
-            margin-top: 10px;
-            text-align: center;
-            font-size: 14px;
-        }
-        .loading {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #007bff;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-        .tree {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            margin: 10px auto;
-            max-width: 900px;
-            width: 100%;
-        }
-        .vertical-line {
-            position: absolute;
-            top: 100px;
-            height: 80%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 1px;
-            background: #ccc;
-            z-index: -1;
-        }
-        .level {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 25px;
-            margin: 20px 0;
-            position: relative;
-            width: 100%;
-            z-index: 1;
-        }
-        .horizontal-line {
-            position: absolute;
-            top: 50%;
-            width: 60%;
-            height: 1px;
-            background: #ccc;
-            z-index: -1;
-        }
-        .node {
-            border: 1px solid #ccc;
-            padding: 10px;
-            background-color: white;
-            border-radius: 5px;
-            min-width: 240px;
-            max-width: 260px;
-            text-align: center;
-            box-sizing: border-box;
-            position: relative;
-            z-index: 2;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .node:hover {
-            transform: scale(1.2);
-            z-index: 3;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.55);
-        }
-        .node.non-main {
-            min-width: 140px;
-            max-width: 180px;
-        }
-        .node.main {
-            border: 5px solid #007bff;
-        }
-        .node .number {
-            font-size: 16px;
-            color: #007bff;
-            margin-bottom: 8px;
-            cursor: pointer;
-        }
-        .node .number:hover {
-            text-decoration: underline;
-        }
-        .node .label {
-            font-size: 12px;
-            color: #333;
-            margin-top: 4px;
-        }
-        .node .satoshi-text {
-            font-size: 10px;
-            color: #007bff;
-            margin-top: 2px;
-        }
-        .node iframe {
-            width: 180px;
-            height: 200px;
-            border: none;
-            background-color: #6e7c96;
-            display: block;
-            margin: 0 auto;
-            object-fit: contain;
-        }
-        .node.non-main iframe {
-            width: 120px;
-            height: 120px;
-            object-fit: contain;
-        }
-        .node img {
-            width: 180px;
-            height: 180px;
-            object-fit: contain;
-            display: block;
-            margin: 0 auto;
-            image-rendering: pixelated;
-            background-color: #6f7c96;
-        }
-        .node.non-main img {
-            width: 120px;
-            height: 120px;
-            background-color: #6f7c96;
-            image-rendering: pixelated;
-        }
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .pagination button {
-            padding: 5px 10px;
-            font-size: 14px;
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 3px;
-        }
-        .pagination button:hover {
-            background-color: #0056b3;
-        }
-        .pagination button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        .toggle-container {
-            margin: 10px;
-        }
-        .toggle-container label {
-            margin-right: 10px;
-            font-size: 16px;
-        }
-        .toggle-container select {
-            padding: 5px;
-            font-size: 16px;
-            border-radius: 5px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self' 'unsafe-eval' 'unsafe-inline' data: blob:;
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com;
+    img-src 'self' data: blob: https://placehold.co https://ordinals.com https://fractal-static.unisat.io https://fractal.unisat.io https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app;
+    frame-src 'self' https://ordinals.com https://fractal-static.unisat.io https://fractal.unisat.io https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app;
+    connect-src 'self' https://ordinals.com https://api.hiro.so https://open-api-fractal.unisat.io https://fractal-static.unisat.io https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app;
+  ">
+  <title>Domoducks Family Tree</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background-color: #f0f0f0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+    .input-container { text-align: center; margin-bottom: 20px; position: relative; }
+    #inscription-id { padding: 10px; width: 300px; font-size: 12px; box-sizing: border-box; }
+    #fetch-btn, #reset-btn { padding: 10px 10px; font-size: 16px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 5px; margin: 10px; }
+    #fetch-btn:hover, #reset-btn:hover { background-color: #0056b3; }
+    #error { color: red; margin-top: 10px; text-align: center; font-size: 14px; }
+    .loading { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+    .tree { display: flex; flex-direction: column; align-items: center; position: relative; margin: 10px auto; max-width: 900px; width: 100%; }
+    .vertical-line { position: absolute; top: 100px; height: 80%; left: 50%; transform: translateX(-50%); width: 1px; background: #ccc; z-index: -1; }
+    .level { display: flex; flex-wrap: wrap; justify-content: center; gap: 25px; margin: 20px 0; position: relative; width: 100%; z-index: 1; }
+    .horizontal-line { position: absolute; top: 50%; width: 60%; height: 1px; background: #ccc; z-index: -1; }
+
+    /* Card Flip */
+    .node { perspective: 1000px; width: 240px; height: 260px; cursor: pointer; }
+    .node.non-main { width: 150px; height: 210px; }
+    .node.main { border: 5px solid #007bff; }
+    .card-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.6s; }
+    .node.flipped .card-inner { transform: rotateY(180deg); }
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 15px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow: hidden;
+    }
+    .card-back {
+      transform: rotateY(180deg);
+      align-items: flex-start; /* Left align content */
+      font-size: 9px;
+      line-height: 1;
+    }
+    .card-back .label-line {
+      margin-bottom: 3px;
+      width: 100%; /* Full width */
+    }
+    .card-back .label-title {
+      color: #007bff;
+      font-weight: bold;
+      display: block;
+    }
+    .card-back .label-value {
+      display: block;
+      margin-top: 2px;
+      word-break: break-all;
+      color: #333;
+    }
+    .node:hover .card-front { transform: scale(1.1); box-shadow: 0 8px 16px rgba(0,0,0,0.4); z-index: 10; }
+    .node .number { font-size: 16px; color: #007bff; margin-bottom: 8px; cursor: pointer; }
+    .node .number:hover { text-decoration: underline; }
+    .node .label { font-size: 12px; color: #333; margin-top: 6px; }
+    .node .satoshi-text { font-size: 10px; color: #007bff; margin-top: 4px; }
+    .node img { width: 180px; height: 180px; object-fit: contain; image-rendering: pixelated; background: #6f7c96; }
+    .node.non-main img { width: 120px; height: 120px; }
+    .node iframe { width: 180px; height: 180px; border: none; background: #6e7c96; }
+    .node.non-main iframe { width: 120px; height: 120px; }
+    .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+    .pagination button { padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+    .pagination button:hover { background: #0056b3; }
+    .pagination button:disabled { background: #ccc; cursor: not-allowed; }
+    .toggle-container { margin: 10px; }
+    .toggle-container select { padding: 5px; font-size: 16px; border-radius: 5px; }
+  </style>
 </head>
 <body>
-    <div class="input-container">
-        <div class="toggle-container">
-            <label for="network-toggle">Network:</label>
-            <select id="network-toggle">
-                <option value="ordinals" selected>Ordinals</option>
-                <option value="fractals">Fractals</option>
-            </select>
+  <div class="input-container">
+    <div class="toggle-container">
+      <label for="network-toggle">Network:</label>
+      <select id="network-toggle">
+        <option value="ordinals" selected>Ordinals</option>
+        <option value="fractals">Fractals</option>
+      </select>
+    </div>
+    <input type="text" id="inscription-id" placeholder="Enter Inscription ID" value="593015b9a76a11554f0a05c3b77a4723c6baaefb8bdd4175712a7320714b8ea8i0">
+    <button id="fetch-btn">Fetch Family Tree</button>
+    <button id="reset-btn">Reset</button>
+    <div id="error"></div>
+    <div id="loading" class="loading"></div>
+  </div>
+
+  <div class="tree" id="tree">
+    <div class="vertical-line"></div>
+  </div>
+
+  <script>
+    const EXCLUDED_ID = '3076dfe2994ca4b229009eaf5696ad51c4cc68159d13a73a7927a3b8638e411ai0';
+    const SATOSHI_IDS = ['84defb5e7db11f047b4bc58685b65654980be4a55e254a510048a71e0e43e532i0','3f409c1e27eb0ef45b2f5c0e099cd2320f055ec9fd60c5becbb9830533fb155bi0','212957fe226d237522049fa2d3cf47337ae8bc6d2e90ca21ca4a188e2933bdb2i0','5564e0402cd25efb8339715598946bb11d62120923b98be7bc4ed73d82928bf8i0','895060f4d9347d6f07be07cf4c0b9990abe8b2fb97db750b85eee240e07de1adi0'];
+    const CHILDREN_PER_PAGE = 16;
+    const DEFAULT_ORDINALS_ID = '593015b9a76a11554f0a05c3b77a4723c6baaefb8bdd4175712a7320714b8ea8i0';
+    const DEFAULT_FRACTALS_ID = 'a8c39053a557f72619115be77dfeb7bd8506c4d23dee7ddb86d5bc2aea421eeei0';
+    let currentPage = 1;
+    let allChildrenIds = [];
+    let network = 'ordinals';
+    const PROXY_URL = 'https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app/.netlify/functions/proxy';
+
+    const DEFAULT_META = { txid: 'N/A', inscriptionNumber: 'N/A', contentType: 'N/A', contentLength: 'N/A', genesisBlock: 'N/A', address: 'N/A' };
+
+    function validateInscriptionId(id) {
+      return /^[0-9a-fA-F]{64}i\d+$/.test(id);
+    }
+
+    function truncate(str, length = 20) {
+      if (typeof str !== 'string' || str === 'N/A') return 'N/A';
+      return str.length > length ? str.slice(0, length) + '...' : str;
+    }
+
+    async function fetchInscriptionData(id, depth = 0, visited = new Set()) {
+      if (id === EXCLUDED_ID) return null;
+      if (visited.has(id)) {
+        return { id, content: 'https://placehold.co/150x150?text=Self-Ref', isImage: true, isHtml: false, number: 'N/A', meta: { ...DEFAULT_META }, parents: [], grandparents: [], greatGrandparents: [], children: [] };
+      }
+      visited.add(id);
+      if (!validateInscriptionId(id)) {
+        return { id, content: 'https://placehold.co/150x150?text=Invalid+ID', isImage: true, isHtml: false, number: 'N/A', meta: { ...DEFAULT_META }, parents: [], grandparents: [], greatGrandparents: [], children: [] };
+      }
+
+      const isFractal = network === 'fractals';
+      const baseUrlRaw = isFractal ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
+      const baseUrl = isFractal ? `${PROXY_URL}?url=${encodeURIComponent(baseUrlRaw)}` : baseUrlRaw;
+      const previewBaseUrl = isFractal ? 'https://fractal-static.unisat.io/preview' : 'https://ordinals.com/preview';
+      const contentBaseUrlRaw = isFractal ? 'https://ordinals.fractalbitcoin.io/content' : 'https://ordinals.com/content';
+      const contentBaseUrl = isFractal ? `${PROXY_URL}?url=${encodeURIComponent(contentBaseUrlRaw)}` : contentBaseUrlRaw;
+      const inscriptionUrl = isFractal ? `https://open-api-fractal.unisat.io/v1/indexer/inscription/info/${id}` : `https://api.hiro.so/ordinals/v1/inscriptions/${id}`;
+
+      let content = `${previewBaseUrl}/${id}`;
+      let isImage = true;
+      let isHtml = false;
+      let number = 'N/A';
+      const meta = { ...DEFAULT_META };
+
+      try {
+        const inscriptionResponse = await fetch(inscriptionUrl);
+        if (inscriptionResponse.ok) {
+          const json = await inscriptionResponse.json();
+          if (isFractal) {
+            meta.txid = json.data?.inscriptionId || 'N/A';
+            meta.inscriptionNumber = json.data?.inscriptionNumber ?? 'N/A';
+            meta.contentType = json.data?.contentType || 'N/A';
+            meta.contentLength = json.data?.contentLength || 'N/A';
+            meta.genesisBlock = json.data?.height || 'N/A';
+            meta.address = json.data?.address || 'N/A';
+            number = json.data?.inscriptionNumber ?? 'N/A';
+          } else {
+            meta.txid = json.id || 'N/A';
+            meta.inscriptionNumber = json.number ?? 'N/A';
+            meta.contentType = json.content_type || 'N/A';
+            meta.contentLength = json.content_length || 'N/A';
+            meta.genesisBlock = json.genesis_block_height ?? 'N/A';
+            meta.address = json.address || 'N/A';
+            number = json.number ?? 'N/A';
+          }
+        }
+
+        try {
+          const head = await fetch(content, { method: 'HEAD' });
+          const type = head.headers.get('content-type') || '';
+          if (head.status >= 400 || !type.startsWith('image/')) {
+            content = `${contentBaseUrl}/${id}`;
+            const head2 = await fetch(content, { method: 'HEAD' });
+            const type2 = head2.headers.get('content-type') || '';
+            if (!type2.startsWith('image/')) { isImage = false; isHtml = true; }
+          }
+        } catch { content = 'https://placehold.co/150x150?text=Error'; }
+
+        const [parentsRes, childrenRes] = await Promise.all([
+          fetch(`${baseUrl}/r/parents/${id}`).catch(() => ({ ok: false })),
+          depth === 0 ? fetch(`${baseUrl}/r/children/${id}`).catch(() => ({ ok: false })) : { ok: false }
+        ]);
+
+        const parentsData = parentsRes.ok ? await parentsRes.json() : { ids: [] };
+        const childrenData = depth === 0 && childrenRes.ok ? await childrenRes.json() : { ids: [] };
+
+        const filteredParents = (parentsData.ids || []).filter(p => p !== EXCLUDED_ID);
+        const filteredChildren = (childrenData.ids || []).filter(c => c !== EXCLUDED_ID);
+
+        let grandparents = [], greatGrandparents = [];
+        if (depth < 1 && filteredParents.length > 0) {
+          const gpMap = new Map();
+          for (const p of filteredParents) {
+            const pData = await fetchInscriptionData(p, depth + 1, visited);
+            if (pData) {
+              for (const gp of pData.parents) {
+                if (!gpMap.has(gp)) {
+                  const ggData = await fetchInscriptionData(gp, depth + 2, visited);
+                  if (ggData) {
+                    gpMap.set(gp, ggData);
+                  }
+                }
+              }
+            }
+          }
+          grandparents = Array.from(gpMap.values());
+        }
+
+        return { id, content, isImage, isHtml, number, meta, parents: filteredParents, grandparents, greatGrandparents, children: filteredChildren };
+      } catch (err) {
+        console.error('Fetch error for', id, err);
+        return { id, content: 'https://placehold.co/150x150?text=Error', isImage: true, isHtml: false, number: 'N/A', meta: { ...DEFAULT_META }, parents: [], grandparents: [], greatGrandparents: [], children: [] };
+      }
+    }
+
+    function createNode(id, content, isHtml, isImage, levelType, index, number, meta = { ...DEFAULT_META }) {
+      if (id === EXCLUDED_ID) return null;
+      const node = document.createElement('div');
+      node.className = `node ${levelType === 'main' ? 'main' : 'non-main'}`;
+      node.dataset.id = id;
+
+      const label = levelType === 'great-grandparent' ? `Great-Grandparent #${index + 1}` :
+                    levelType === 'grandparent' ? `Grandparent #${index + 1}` :
+                    levelType === 'parent' ? `Parent #${index + 1}` :
+                    levelType === 'main' ? 'Main Inscription' : `Child #${index + 1}`;
+
+      const satoshiText = SATOSHI_IDS.includes(id) ? '<div class="satoshi-text">(Sent to Satoshi)</div>' : '';
+
+      const display = isImage
+        ? `<img src="${content}" onerror="this.src='https://placehold.co/150x150?text=Error';" alt="Inscription">`
+        : `<iframe src="${content}" sandbox=""></iframe>`;
+
+      const sizeText = meta.contentLength !== 'N/A' ? `${meta.contentLength} bytes` : 'N/A';
+
+      node.innerHTML = `
+        <div class="card-inner">
+          <div class="card-front">
+            <div class="number" onclick="buildTree('${id}')">#${number}</div>
+            ${display}
+            <div class="label">${label}</div>
+            ${satoshiText}
+          </div>
+          <div class="card-back">
+            <div class="label-line"><span class="label-title">Tx ID:</span><span class="label-value">${truncate(meta.txid, 100)}</span></div>
+            <div class="label-line"><span class="label-title">Inscription #:</span><span class="label-value">${meta.inscriptionNumber}</span></div>
+            <div class="label-line"><span class="label-title">File Type:</span><span class="label-value">${meta.contentType}</span></div>
+            <div class="label-line"><span class="label-title">File Size:</span><span class="label-value">${sizeText}</span></div>
+            <div class="label-line"><span class="label-title">Creation Block:</span><span class="label-value">${meta.genesisBlock}</span></div>
+            <div class="label-line"><span class="label-title">Owned By:</span><span class="label-value">${truncate(meta.address, 100)}</span></div>
+          </div>
         </div>
-        <input type="text" id="inscription-id" placeholder="Enter Inscription ID" value="593015b9a76a11554f0a05c3b77a4723c6baaefb8bdd4175712a7320714b8ea8i0">
-        <button id="fetch-btn">Fetch Family Tree</button>
-        <button id="reset-btn">Reset</button>
-        <div id="error"></div>
-        <div id="loading" class="loading"></div>
-    </div>
-    <div class="tree" id="tree">
-        <div class="vertical-line"></div>
-    </div>
-    <script>
-        const EXCLUDED_ID = '3076dfe2994ca4b229009eaf5696ad51c4cc68159d13a73a7927a3b8638e411ai0';
-        // Added multiple IDs that should display "(Sent to Satoshi)"
-        const SATOSHI_IDS = [
-            '84defb5e7db11f047b4bc58685b65654980be4a55e254a510048a71e0e43e532i0', // original
-            '3f409c1e27eb0ef45b2f5c0e099cd2320f055ec9fd60c5becbb9830533fb155bi0',
-            '212957fe226d237522049fa2d3cf47337ae8bc6d2e90ca21ca4a188e2933bdb2i0',
-            '5564e0402cd25efb8339715598946bb11d62120923b98be7bc4ed73d82928bf8i0',
-            '895060f4d9347d6f07be07cf4c0b9990abe8b2fb97db750b85eee240e07de1adi0'
-        ];
-        const CHILDREN_PER_PAGE = 16;
-        const DEFAULT_ORDINALS_ID = '593015b9a76a11554f0a05c3b77a4723c6baaefb8bdd4175712a7320714b8ea8i0';
-        const DEFAULT_FRACTALS_ID = 'a8c39053a557f72619115be77dfeb7bd8506c4d23dee7ddb86d5bc2aea421eeei0';
-        let currentPage = 1;
-        let allChildrenIds = [];
-        let network = 'ordinals';
-        const PROXY_URL = 'https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app/.netlify/functions/proxy';
-        function validateInscriptionId(id) {
-            const regex = /^[0-9a-fA-F]{64}i\d+$/;
-            return regex.test(id);
+      `;
+
+      node.addEventListener('click', (e) => {
+        e.stopPropagation();
+        node.classList.toggle('flipped');
+      });
+
+      return node;
+    }
+
+    function renderPagination(total) {
+      const div = document.createElement('div');
+      div.className = 'pagination';
+      div.innerHTML = `
+        <button ${currentPage === 1 ? 'disabled' : ''} onclick="currentPage--; renderChildrenLevel()">Previous</button>
+        <span>Page ${currentPage} of ${Math.ceil(total / CHILDREN_PER_PAGE)}</span>
+        <button ${currentPage >= Math.ceil(total / CHILDREN_PER_PAGE) ? 'disabled' : ''} onclick="currentPage++; renderChildrenLevel()">Next</button>
+      `;
+      return div;
+    }
+
+    async function renderChildrenLevel() {
+      const level = document.getElementById('children-level');
+      if (!level) return;
+      level.innerHTML = allChildrenIds.length > 1 ? '<div class="horizontal-line"></div>' : '';
+      const start = (currentPage - 1) * CHILDREN_PER_PAGE;
+      const end = Math.min(start + CHILDREN_PER_PAGE, allChildrenIds.length);
+      for (let i = start; i < end; i++) {
+        const childData = await fetchInscriptionData(allChildrenIds[i], 1);
+        if (childData) {
+          const node = createNode(childData.id, childData.content, childData.isHtml, childData.isImage, 'child', i, childData.number, childData.meta);
+          if (node) level.appendChild(node);
         }
-        async function fetchInscriptionData(id, depth = 0, visited = new Set()) {
-            if (id === EXCLUDED_ID) return null;
-            if (visited.has(id)) {
-                return {
-                    id,
-                    content: 'https://placehold.co/150x150?text=Self-Ref',
-                    isImage: true,
-                    isHtml: false,
-                    number: 'N/A',
-                    parents: [],
-                    grandparents: [],
-                    greatGrandparents: [],
-                    children: []
-                };
-            }
-            visited.add(id);
-            if (!validateInscriptionId(id)) {
-                return {
-                    id,
-                    content: 'https://placehold.co/150x150?text=Invalid+ID',
-                    isImage: true,
-                    isHtml: false,
-                    number: 'N/A',
-                    parents: [],
-                    grandparents: [],
-                    greatGrandparents: [],
-                    children: []
-                };
-            }
-            const isFractal = network === 'fractals';
-            const baseUrlRaw = isFractal ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
-            const baseUrl = isFractal ? `${PROXY_URL}?url=${encodeURIComponent(baseUrlRaw)}` : baseUrlRaw;
-            const previewBaseUrl = isFractal ? 'https://fractal-static.unisat.io/preview' : 'https://ordinals.com/preview';
-            const contentBaseUrlRaw = isFractal ? 'https://ordinals.fractalbitcoin.io/content' : 'https://ordinals.com/content';
-            const contentBaseUrl = isFractal ? `${PROXY_URL}?url=${encodeURIComponent(contentBaseUrlRaw)}` : contentBaseUrlRaw;
-            const inscriptionUrl = isFractal
-                ? `https://open-api-fractal.unisat.io/v1/indexer/inscription/info/${id}`
-                : `https://api.hiro.so/ordinals/v1/inscriptions/${id}`;
-            try {
-                const [parentsResponse, childrenResponse, inscriptionResponse] = await Promise.all([
-                    fetch(`${baseUrl}/r/parents/${id}`).catch(e => ({ ok: false })),
-                    depth === 0 ? fetch(`${baseUrl}/r/children/${id}`).catch(e => ({ ok: false })) : { ok: false },
-                    fetch(inscriptionUrl).catch(e => ({ ok: false }))
-                ]);
-                let content = `${previewBaseUrl}/${id}`;
-                let isImage = true;
-                let isHtml = false;
-                try {
-                    const previewResponse = await fetch(content, { method: 'HEAD' });
-                    const previewContentType = previewResponse.headers.get('content-type');
-                    if (previewResponse.status >= 400) {
-                        content = `${contentBaseUrl}/${id}`;
-                    } else if (previewContentType && !previewContentType.includes('image/')) {
-                        content = `${contentBaseUrl}/${id}`;
-                    }
-                    const contentResponse = await fetch(content, { method: 'HEAD' });
-                    const contentContentType = contentResponse.headers.get('content-type');
-                    if (contentResponse.status >= 400) {
-                        content = 'https://placehold.co/150x150?text=Preview+Error';
-                        isImage = true;
-                    } else if (contentContentType && !contentContentType.includes('image/')) {
-                        content = `${previewBaseUrl}/${id}`;
-                        isImage = false;
-                        isHtml = true;
-                    }
-                } catch (e) {
-                    content = 'https://placehold.co/150x150?text=Error';
-                    isImage = true;
-                }
-                const parentsData = parentsResponse.ok ? await parentsResponse.json().catch(() => ({ ids: [] })) : { ids: [] };
-                const childrenData = depth === 0 && childrenResponse.ok ? await childrenResponse.json().catch(() => ({ ids: [] })) : { ids: [] };
-                let inscriptionNumber = 'N/A';
-                if (inscriptionResponse.ok) {
-                    const json = await inscriptionResponse.json();
-                    inscriptionNumber = isFractal ? (json.data?.inscriptionNumber ?? 'N/A') : (json.number ?? 'N/A');
-                }
-                const filteredParents = Array.isArray(parentsData?.ids) ? parentsData.ids.filter(pid => pid !== EXCLUDED_ID) : [];
-                const filteredChildren = Array.isArray(childrenData?.ids) ? childrenData.ids.filter(cid => cid !== EXCLUDED_ID) : [];
-                let grandparents = [];
-                let greatGrandparents = [];
-                if (depth < 1 && filteredParents.length > 0) {
-                    const grandparentMap = new Map();
-                    for (const parentId of filteredParents) {
-                        const parentData = await fetchInscriptionData(parentId, depth + 1, new Set(visited));
-                        if (parentData) {
-                            const grandparentIds = Array.isArray(parentData.parents) ? parentData.parents.filter(gid => gid !== EXCLUDED_ID) : [];
-                            for (const gpId of grandparentIds) {
-                                if (!grandparentMap.has(gpId)) {
-                                    const ggData = await fetchInscriptionData(gpId, depth + 2, new Set(visited));
-                                    if (ggData) {
-                                        grandparentMap.set(gpId, {
-                                            id: gpId,
-                                            content: ggData.content,
-                                            isHtml: ggData.isHtml,
-                                            isImage: ggData.isImage,
-                                            number: ggData.number,
-                                            parents: ggData.parents
-                                        });
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    grandparents = Array.from(grandparentMap.values());
-                    if (grandparents.length > 0 && depth < 2) {
-                        const greatGrandparentMap = new Map();
-                        for (const grandparent of grandparents) {
-                            const greatGrandparentIds = Array.isArray(grandparent.parents) ? grandparent.parents.filter(ggid => ggid !== EXCLUDED_ID) : [];
-                            for (const ggId of greatGrandparentIds) {
-                                if (!greatGrandparentMap.has(ggId)) {
-                                    const ggData = await fetchInscriptionData(ggId, depth + 3, new Set(visited));
-                                    if (ggData) {
-                                        greatGrandparentMap.set(ggId, {
-                                            id: ggId,
-                                            content: ggData.content,
-                                            isHtml: ggData.isHtml,
-                                            isImage: ggData.isImage,
-                                            number: ggData.number
-                                        });
-                                    }
-                                }
-                            }
-                        }
-                        greatGrandparents = Array.from(greatGrandparentMap.values());
-                    }
-                }
-                return {
-                    id,
-                    content,
-                    isHtml,
-                    isImage,
-                    number: inscriptionNumber,
-                    parents: filteredParents,
-                    grandparents,
-                    greatGrandparents,
-                    children: filteredChildren
-                };
-            } catch (error) {
-                console.error(`Error fetching data for ${id}:`, error);
-                return {
-                    id,
-                    content: 'https://placehold.co/150x150?text=Error',
-                    isImage: true,
-                    isHtml: false,
-                    number: 'N/A',
-                    parents: [],
-                    grandparents: [],
-                    greatGrandparents: [],
-                    children: []
-                };
-            }
+      }
+      const oldPag = document.getElementById('pagination');
+      if (oldPag) oldPag.remove();
+      if (allChildrenIds.length > CHILDREN_PER_PAGE) {
+        const pag = renderPagination(allChildrenIds.length);
+        pag.id = 'pagination';
+        level.parentNode.appendChild(pag);
+      }
+    }
+
+    async function buildTree(inscriptionId) {
+      const tree = document.getElementById('tree');
+      const errorDiv = document.getElementById('error');
+      const loadingDiv = document.getElementById('loading');
+      tree.innerHTML = '<div class="vertical-line"></div>';
+      errorDiv.textContent = '';
+      loadingDiv.style.display = 'block';
+      currentPage = 1;
+      allChildrenIds = [];
+
+      let mainData = null;
+      try {
+        mainData = await fetchInscriptionData(inscriptionId);
+        if (!mainData) {
+          throw new Error('This inscription is excluded or could not be loaded.');
         }
-        function createNode(id, content, isHtml, isImage, levelType, index, number) {
-            if (id === EXCLUDED_ID) return null;
-            const node = document.createElement('div');
-            node.className = `node ${levelType === 'main' ? 'main' : 'non-main'}`;
-            node.dataset.id = id;
-            let label = '';
-            if (levelType === 'great-grandparent') label = `Great-Grandparent #${index + 1}`;
-            else if (levelType === 'grandparent') label = `Grandparent #${index + 1}`;
-            else if (levelType === 'parent') label = `Parent #${index + 1}`;
-            else if (levelType === 'main') label = 'Main Inscription';
-            else if (levelType === 'child') label = `Child #${index + 1}`;
-            // Updated to check array
-            const satoshiText = SATOSHI_IDS.includes(id) ? '<div class="satoshi-text">(Sent to Satoshi)</div>' : '';
-            node.innerHTML = `
-                <div class="number" onclick="buildTree('${id}')">#${number}</div>
-                ${isImage ? `<img src="${content}" alt="Inscription Content" onerror="this.src='https://placehold.co/150x150?text=Image+Error';">` : `<iframe src="${content}" title="Inscription Content" sandbox="allow-scripts allow-same-origin"></iframe>`}
-                <div class="label">${label}</div>
-                ${satoshiText}
-            `;
-            return node;
-        }
-        function renderPagination(totalChildren) {
-            const totalPages = Math.ceil(totalChildren / CHILDREN_PER_PAGE);
-            const paginationDiv = document.createElement('div');
-            paginationDiv.className = 'pagination';
-            const prevButton = document.createElement('button');
-            prevButton.textContent = 'Previous';
-            prevButton.disabled = currentPage === 1;
-            prevButton.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderChildrenLevel(); } });
-            paginationDiv.appendChild(prevButton);
-            const pageSpan = document.createElement('span');
-            pageSpan.textContent = `Page ${currentPage} of ${totalPages}`;
-            paginationDiv.appendChild(pageSpan);
-            const nextButton = document.createElement('button');
-            nextButton.textContent = 'Next';
-            nextButton.disabled = currentPage === totalPages;
-            nextButton.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; renderChildrenLevel(); } });
-            paginationDiv.appendChild(nextButton);
-            return paginationDiv;
-        }
-        async function renderChildrenLevel() {
-            const childrenLevel = document.getElementById('children-level');
-            if (!childrenLevel) return;
-            try {
-                childrenLevel.innerHTML = '';
-                if (allChildrenIds.length > 1) {
-                    childrenLevel.innerHTML = '<div class="horizontal-line"></div>';
-                }
-                const startIndex = (currentPage - 1) * CHILDREN_PER_PAGE;
-                const endIndex = Math.min(startIndex + CHILDREN_PER_PAGE, allChildrenIds.length);
-                const paginatedChildIds = allChildrenIds.slice(startIndex, endIndex);
-                if (paginatedChildIds.length > 0) {
-                    let index = startIndex;
-                    for (const childId of paginatedChildIds) {
-                        const childData = await fetchInscriptionData(childId, 1);
-                        if (childData) {
-                            const node = createNode(childId, childData.content, childData.isHtml, childData.isImage, 'child', index, childData.number);
-                            if (node) childrenLevel.appendChild(node);
-                            index++;
-                        }
-                    }
-                } else {
-                    childrenLevel.innerHTML = '<div>No children</div>';
-                }
-                const existingPagination = document.getElementById('pagination');
-                if (existingPagination) existingPagination.remove();
-                if (allChildrenIds.length > CHILDREN_PER_PAGE) {
-                    const paginationDiv = renderPagination(allChildrenIds.length);
-                    paginationDiv.id = 'pagination';
-                    childrenLevel.parentNode.appendChild(paginationDiv);
-                }
-            } catch (error) {
-                console.error(`Error rendering children level:`, error);
-                childrenLevel.innerHTML = '<div>Error loading children</div>';
-            }
-        }
-        async function buildTree(inscriptionId) {
-            const tree = document.getElementById('tree');
-            const errorDiv = document.getElementById('error');
-            const loadingDiv = document.getElementById('loading');
-            tree.innerHTML = '<div class="vertical-line"></div>';
-            errorDiv.textContent = '';
-            errorDiv.style.display = 'none';
-            loadingDiv.style.display = 'block';
-            currentPage = 1;
-            allChildrenIds = [];
-            document.getElementById('inscription-id').value = inscriptionId;
-            if (inscriptionId === EXCLUDED_ID) {
-                errorDiv.textContent = 'This inscription ID is excluded from display.';
-                errorDiv.style.display = 'block';
-                loadingDiv.style.display = 'none';
-                return;
-            }
-            if (!validateInscriptionId(inscriptionId)) {
-                errorDiv.textContent = 'Invalid Inscription ID format.';
-                errorDiv.style.display = 'block';
-                loadingDiv.style.display = 'none';
-                return;
-            }
-            try {
-                const data = await fetchInscriptionData(inscriptionId);
-                if (!data) throw new Error('Failed to fetch inscription data');
-                const greatGrandparentsLevel = document.createElement('div');
-                greatGrandparentsLevel.className = `level ${data.greatGrandparents.length > 0 ? 'multiple' : ''}`;
-                if (data.greatGrandparents.length > 1) greatGrandparentsLevel.innerHTML = '<div class="horizontal-line"></div>';
-                if (data.greatGrandparents.length > 0) {
-                    data.greatGrandparents.forEach((gg, i) => {
-                        const node = createNode(gg.id, gg.content, gg.isHtml, gg.isImage, 'great-grandparent', i, gg.number);
-                        if (node) greatGrandparentsLevel.appendChild(node);
-                    });
-                } else if (data.grandparents.length > 0) {
-                    greatGrandparentsLevel.innerHTML = '<div>No Great-grandparents</div>';
-                }
-                if (data.grandparents.length > 0) tree.appendChild(greatGrandparentsLevel);
-                const grandparentsLevel = document.createElement('div');
-                grandparentsLevel.className = `level ${data.grandparents.length > 0 ? 'multiple' : ''}`;
-                if (data.grandparents.length > 1) grandparentsLevel.innerHTML = '<div class="horizontal-line"></div>';
-                if (data.grandparents.length > 0) {
-                    data.grandparents.forEach((gp, i) => {
-                        const node = createNode(gp.id, gp.content, gp.isHtml, gp.isImage, 'grandparent', i, gp.number);
-                        if (node) grandparentsLevel.appendChild(node);
-                    });
-                } else {
-                    grandparentsLevel.innerHTML = '<div>No Grandparents</div>';
-                }
-                tree.appendChild(grandparentsLevel);
-                const parentsLevel = document.createElement('div');
-                parentsLevel.className = `level ${data.parents.length > 0 ? 'multiple' : ''}`;
-                if (data.parents.length > 1) parentsLevel.innerHTML = '<div class="horizontal-line"></div>';
-                if (data.parents.length > 0) {
-                    let index = 0;
-                    for (const parentId of data.parents) {
-                        const parentData = await fetchInscriptionData(parentId, 1);
-                        if (parentData) {
-                            const node = createNode(parentId, parentData.content, parentData.isHtml, parentData.isImage, 'parent', index, parentData.number);
-                            if (node) parentsLevel.appendChild(node);
-                            index++;
-                        }
-                    }
-                } else {
-                    parentsLevel.innerHTML = '<div>No Parents</div>';
-                }
-                tree.appendChild(parentsLevel);
-                const mainLevel = document.createElement('div');
-                mainLevel.className = 'level single';
-                const mainNode = createNode(inscriptionId, data.content, data.isHtml, data.isImage, 'main', 0, data.number);
-                if (mainNode) mainLevel.appendChild(mainNode);
-                tree.appendChild(mainLevel);
-                const childrenLevel = document.createElement('div');
-                childrenLevel.className = `level children ${data.children.length > 0 ? 'multiple' : ''}`;
-                childrenLevel.id = 'children-level';
-                tree.appendChild(childrenLevel);
-                allChildrenIds = data.children;
-                await renderChildrenLevel();
-            } catch (error) {
-                console.error('Build error:', error);
-                errorDiv.textContent = `Failed: ${error.message}`;
-                errorDiv.style.display = 'block';
-            } finally {
-                loadingDiv.style.display = 'none';
-            }
-        }
-        document.getElementById('fetch-btn').addEventListener('click', () => {
-            const inscriptionId = document.getElementById('inscription-id').value.trim();
-            if (inscriptionId) buildTree(inscriptionId);
+      } catch (err) {
+        errorDiv.textContent = 'Error loading main inscription: ' + (err.message || 'Unknown error');
+        loadingDiv.style.display = 'none';
+        return;
+      }
+
+      try {
+        ['greatGrandparents', 'grandparents'].forEach(type => {
+          const items = mainData[type] || [];
+          const level = document.createElement('div');
+          level.className = 'level';
+          if (items.length > 1) level.innerHTML = '<div class="horizontal-line"></div>';
+          items.forEach((item, i) => {
+            const levelName = type === 'greatGrandparents' ? 'great-grandparent' : 'grandparent';
+            const node = createNode(item.id, item.content, item.isHtml, item.isImage, levelName, i, item.number, item.meta);
+            if (node) level.appendChild(node);
+          });
+          if (items.length === 0 && type === 'grandparents') level.innerHTML += '<div>No Grandparents</div>';
+          tree.appendChild(level);
         });
-        document.getElementById('reset-btn').addEventListener('click', () => {
-            const defaultId = network === 'fractals' ? DEFAULT_FRACTALS_ID : DEFAULT_ORDINALS_ID;
-            document.getElementById('inscription-id').value = defaultId;
-            buildTree(defaultId);
-        });
-        document.getElementById('network-toggle').addEventListener('change', (event) => {
-            network = event.target.value;
-            const inscriptionId = network === 'fractals' ? DEFAULT_FRACTALS_ID : DEFAULT_ORDINALS_ID;
-            document.getElementById('inscription-id').value = inscriptionId;
-            buildTree(inscriptionId);
-        });
-        window.onload = () => {
-            buildTree(document.getElementById('inscription-id').value.trim());
-        };
-    </script>
+
+        const parentLevel = document.createElement('div');
+        parentLevel.className = 'level';
+        if (mainData.parents.length > 1) parentLevel.innerHTML = '<div class="horizontal-line"></div>';
+        if (mainData.parents.length > 0) {
+          for (let i = 0; i < mainData.parents.length; i++) {
+            const parentId = mainData.parents[i];
+            try {
+              const parentData = await fetchInscriptionData(parentId, 1);
+              if (parentData) {
+                const node = createNode(parentId, parentData.content, parentData.isHtml, parentData.isImage, 'parent', i, parentData.number, parentData.meta);
+                if (node) parentLevel.appendChild(node);
+              } else {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'node non-main';
+                placeholder.innerHTML = `<div class="card-front"><div class="label">Parent #${i+1}</div><div style="padding:20px;color:#999;">Load failed</div></div>`;
+                parentLevel.appendChild(placeholder);
+              }
+            } catch (e) {
+              console.warn('Failed to load parent', parentId);
+            }
+          }
+        } else {
+          parentLevel.innerHTML = '<div>No Parents</div>';
+        }
+        tree.appendChild(parentLevel);
+
+        const mainLevel = document.createElement('div');
+        mainLevel.className = 'level';
+        const mainNode = createNode(inscriptionId, mainData.content, mainData.isHtml, mainData.isImage, 'main', 0, mainData.number, mainData.meta);
+        if (mainNode) mainLevel.appendChild(mainNode);
+        tree.appendChild(mainLevel);
+
+        const childrenLevel = document.createElement('div');
+        childrenLevel.className = 'level children';
+        childrenLevel.id = 'children-level';
+        if (mainData.children.length > 1) childrenLevel.innerHTML = '<div class="horizontal-line"></div>';
+        tree.appendChild(childrenLevel);
+        allChildrenIds = mainData.children;
+        await renderChildrenLevel();
+
+      } catch (err) {
+        console.error('Error rendering tree:', err);
+        errorDiv.textContent = 'Partial load: Some related inscriptions failed.';
+      } finally {
+        loadingDiv.style.display = 'none';
+      }
+    }
+
+    document.getElementById('fetch-btn').onclick = () => {
+      const id = document.getElementById('inscription-id').value.trim();
+      if (id) buildTree(id);
+    };
+    document.getElementById('reset-btn').onclick = () => {
+      const defaultId = network === 'fractals' ? DEFAULT_FRACTALS_ID : DEFAULT_ORDINALS_ID;
+      document.getElementById('inscription-id').value = defaultId;
+      buildTree(defaultId);
+    };
+    document.getElementById('network-toggle').onchange = (e) => {
+      network = e.target.value;
+      const defaultId = network === 'fractals' ? DEFAULT_FRACTALS_ID : DEFAULT_ORDINALS_ID;
+      document.getElementById('inscription-id').value = defaultId;
+      buildTree(defaultId);
+    };
+
+    window.onload = () => buildTree(document.getElementById('inscription-id').value.trim());
+  </script>
 </body>
 </html>
