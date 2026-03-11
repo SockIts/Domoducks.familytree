@@ -6,9 +6,9 @@
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self' 'unsafe-eval' 'unsafe-inline' data: blob:;
     script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com;
-    img-src 'self' data: blob: https://placehold.co https://ordinals.com https://fractal-static.unisat.io https://fractal.unisat.io https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app;
-    frame-src 'self' https://ordinals.com https://fractal-static.unisat.io https://fractal.unisat.io https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app;
-    connect-src 'self' https://ordinals.com https://api.hiro.so https://open-api-fractal.unisat.io https://fractal-static.unisat.io https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app;
+    img-src 'self' data: blob: https://placehold.co https://ordinals.com https://fractal-static.unisat.io https://fractal.unisat.io https://ordinals.fractalbitcoin.io;
+    frame-src 'self' https://ordinals.com https://fractal-static.unisat.io https://fractal.unisat.io https://ordinals.fractalbitcoin.io;
+    connect-src 'self' https://ordinals.com https://open-api-fractal.unisat.io https://fractal-static.unisat.io https://ordinals.fractalbitcoin.io;
   ">
   <title>Domoducks Family Tree</title>
   <style>
@@ -117,7 +117,6 @@
     let currentPage = 1;
     let allChildrenIds = [];
     let network = 'ordinals';
-    const PROXY_URL = 'https://69489f269954e9bebdb41863--boisterous-lily-c3dd56.netlify.app/.netlify/functions/proxy';
     const DEFAULT_META = { txid: 'N/A', inscriptionNumber: 'N/A', contentType: 'N/A', contentLength: 'N/A', genesisBlock: 'N/A', address: 'N/A' };
     function validateInscriptionId(id) {
       return /^[0-9a-fA-F]{64}i\d+$/.test(id);
@@ -136,12 +135,10 @@
         return { id, content: 'https://placehold.co/150x150?text=Invalid+ID', isImage: true, isHtml: false, number: 'N/A', meta: { ...DEFAULT_META }, parents: [], grandparents: [], greatGrandparents: [], children: [] };
       }
       const isFractal = network === 'fractals';
-      const baseUrlRaw = isFractal ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
-      const baseUrl = isFractal ? `${PROXY_URL}?url=${encodeURIComponent(baseUrlRaw)}` : baseUrlRaw;
+      const baseUrl = isFractal ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
       const previewBaseUrl = isFractal ? 'https://fractal-static.unisat.io/preview' : 'https://ordinals.com/preview';
-      const contentBaseUrlRaw = isFractal ? 'https://ordinals.fractalbitcoin.io/content' : 'https://ordinals.com/content';
-      const contentBaseUrl = isFractal ? `${PROXY_URL}?url=${encodeURIComponent(contentBaseUrlRaw)}` : contentBaseUrlRaw;
-      const inscriptionUrl = isFractal ? `https://open-api-fractal.unisat.io/v1/indexer/inscription/info/${id}` : `https://api.hiro.so/ordinals/v1/inscriptions/${id}`;
+      const contentBaseUrl = isFractal ? 'https://ordinals.fractalbitcoin.io/content' : 'https://ordinals.com/content';
+      const inscriptionUrl = isFractal ? `https://open-api-fractal.unisat.io/v1/indexer/inscription/info/${id}` : `https://ordinals.com/r/inscription/${id}`;
       let content = `${previewBaseUrl}/${id}`;
       let isImage = true;
       let isHtml = false;
@@ -164,7 +161,7 @@
             meta.inscriptionNumber = json.number ?? 'N/A';
             meta.contentType = json.content_type || 'N/A';
             meta.contentLength = json.content_length || 'N/A';
-            meta.genesisBlock = json.genesis_block_height ?? 'N/A';
+            meta.genesisBlock = json.height ?? 'N/A';
             meta.address = json.address || 'N/A';
             number = json.number ?? 'N/A';
           }
