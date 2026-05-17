@@ -77,7 +77,7 @@
     .node .satoshi-text { font-size: 10px; color: #007bff; margin-top: 4px; }
     .node img { width: 180px; height: 180px; object-fit: contain; image-rendering: pixelated; background: #6f7c96; }
     .node.non-main img { width: 120px; height: 120px; }
-    .node iframe { width: 180px; height: 180px; border: none; background: #6e7c96; }
+    .node iframe { width: 180px; height: 180px; border: none; background: #6e7c96; pointer-events: none; }
     .node.non-main iframe { width: 120px; height: 120px; }
     .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
     .pagination button { padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
@@ -85,6 +85,7 @@
     .pagination button:disabled { background: #ccc; cursor: not-allowed; }
     .toggle-container { margin: 10px; }
     .toggle-container select { padding: 5px; font-size: 16px; border-radius: 5px; }
+    .audio-inline { margin-top: 4px; font-size: 12px; border: none; background: #eef5ff; color: #007bff; border-radius: 10px; padding: 2px 6px; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -108,6 +109,7 @@
   <div class="tree" id="tree">
     <div class="vertical-line"></div>
   </div>
+  <audio id="duckSound" src="data:audio/mpeg;base64,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"></audio>
 <script>
     const EXCLUDED_ID = '3076dfe2994ca4b229009eaf5696ad51c4cc68159d13a73a7927a3b8638e411ai0';
     const SATOSHI_IDS = ['84defb5e7db11f047b4bc58685b65654980be4a55e254a510048a71e0e43e532i0','3f409c1e27eb0ef45b2f5c0e099cd2320f055ec9fd60c5becbb9830533fb155bi0','212957fe226d237522049fa2d3cf47337ae8bc6d2e90ca21ca4a188e2933bdb2i0','5564e0402cd25efb8339715598946bb11d62120923b98be7bc4ed73d82928bf8i0','895060f4d9347d6f07be07cf4c0b9990abe8b2fb97db750b85eee240e07de1adi0'];
@@ -118,6 +120,71 @@
     let allChildrenIds = [];
     let network = 'ordinals';
     const DEFAULT_META = { txid: 'N/A', inscriptionNumber: 'N/A', contentType: 'N/A', contentLength: 'N/A', genesisBlock: 'N/A', address: 'N/A' };
+    const LOCAL_ORDINAL_IMAGE_MAP_URL = './assets/github-ducks/serial-map.json';
+    const LOCAL_ORDINAL_HTML_MAP_URL = './assets/github-ducks/domoducks-256-html/map.json';
+    const LOCAL_ORDINAL_GRAPH_URL = './assets/graph/ordinals-local-graph-trimmed.json';
+    const LOCAL_FRACTAL_GRAPH_URL = './assets/fractal/fractal-5050-graph.json';
+    let LOCAL_ORDINAL_IMAGE_MAP = null;
+    let LOCAL_ORDINAL_HTML_MAP = null;
+    let LOCAL_ORDINAL_GRAPH = null;
+    let LOCAL_FRACTAL_GRAPH = null;
+    async function ensureLocalMapsLoaded() {
+      if (LOCAL_ORDINAL_IMAGE_MAP && LOCAL_ORDINAL_HTML_MAP && LOCAL_ORDINAL_GRAPH && LOCAL_FRACTAL_GRAPH) return;
+      try {
+        const [imgRes, htmlRes, graphRes, fractalGraphRes] = await Promise.all([
+          fetch(LOCAL_ORDINAL_IMAGE_MAP_URL),
+          fetch(LOCAL_ORDINAL_HTML_MAP_URL),
+          fetch(LOCAL_ORDINAL_GRAPH_URL),
+          fetch(LOCAL_FRACTAL_GRAPH_URL)
+        ]);
+        LOCAL_ORDINAL_IMAGE_MAP = imgRes.ok ? await imgRes.json() : {};
+        LOCAL_ORDINAL_HTML_MAP = htmlRes.ok ? await htmlRes.json() : {};
+        LOCAL_ORDINAL_GRAPH = graphRes.ok ? await graphRes.json() : { nodes: {}, collections: {} };
+        LOCAL_FRACTAL_GRAPH = fractalGraphRes.ok ? await fractalGraphRes.json() : { nodes: {} };
+      } catch {
+        LOCAL_ORDINAL_IMAGE_MAP = {};
+        LOCAL_ORDINAL_HTML_MAP = {};
+        LOCAL_ORDINAL_GRAPH = { nodes: {}, collections: {} };
+        LOCAL_FRACTAL_GRAPH = { nodes: {} };
+      }
+    }
+    const FORCE_IMAGE_IDS = new Set([
+      '84defb5e7db11f047b4bc58685b65654980be4a55e254a510048a71e0e43e532i0',
+      '19f504c44f0388c738ca92796b940617e60eb6239f27433b2e4c136191090954i0',
+      'a1066105531b7cc234085e83c352e08405e147fc468f072762a13dc87204ac2di0',
+      'f5fb1f3b1d35a8fef29c12755a05b33ca9713a20e289b1219554842c56860974i0'
+    ]);
+    const FIXED_LOCAL_IMAGE_OVERRIDES = {
+      'a1066105531b7cc234085e83c352e08405e147fc468f072762a13dc87204ac2di0': './assets/github-ducks/fixed-html/a1066105531b7cc234085e83c352e08405e147fc468f072762a13dc87204ac2di0.html',
+      'f5fb1f3b1d35a8fef29c12755a05b33ca9713a20e289b1219554842c56860974i0': './assets/github-ducks/fixed-html/f5fb1f3b1d35a8fef29c12755a05b33ca9713a20e289b1219554842c56860974i0.html'
+    };
+    function resolveLocalOrdinalsContent(id) {
+      const img = LOCAL_ORDINAL_IMAGE_MAP?.[id];
+      const html = LOCAL_ORDINAL_HTML_MAP?.[id];
+      if (FORCE_IMAGE_IDS.has(id)) {
+        if (FIXED_LOCAL_IMAGE_OVERRIDES[id]) {
+          return { content: FIXED_LOCAL_IMAGE_OVERRIDES[id], isImage: false, isHtml: true, source: 'fixed-local-html' };
+        }
+        return { content: `https://ordinals.com/preview/${id}`, isImage: true, isHtml: false, source: 'forced-preview-image' };
+      }
+      if (html?.file) return { content: `./assets/github-ducks/domoducks-256-html/${html.file}`, isImage: false, isHtml: true, source: 'local-html' };
+      if (img?.file) return { content: `./assets/github-ducks/serial-ducks-2560/${img.file}`, isImage: true, isHtml: false, source: 'local-image' };
+      return null;
+    }
+    function getActiveGraph() {
+      return network === 'fractals' ? LOCAL_FRACTAL_GRAPH : LOCAL_ORDINAL_GRAPH;
+    }
+    function getParentsFromLocalGraph(id) {
+      const activeGraph = getActiveGraph();
+      if (!activeGraph?.nodes) return [];
+      const node = activeGraph.nodes[id];
+      if (Array.isArray(node?.parents) && node.parents.length) return node.parents;
+      const parents = [];
+      for (const [pid, pnode] of Object.entries(activeGraph.nodes)) {
+        if (Array.isArray(pnode?.children) && pnode.children.includes(id)) parents.push(pid);
+      }
+      return parents;
+    }
     function validateInscriptionId(id) {
       return /^[0-9a-fA-F]{64}i\d+$/.test(id);
     }
@@ -126,6 +193,7 @@
       return str.length > length ? str.slice(0, length) + '...' : str;
     }
     async function fetchInscriptionData(id, depth = 0, visited = new Set()) {
+      await ensureLocalMapsLoaded();
       if (id === EXCLUDED_ID) return null;
       if (visited.has(id)) {
         return { id, content: 'https://placehold.co/150x150?text=Self-Ref', isImage: true, isHtml: false, number: 'N/A', meta: { ...DEFAULT_META }, parents: [], grandparents: [], greatGrandparents: [], children: [] };
@@ -136,14 +204,67 @@
       }
       const isFractal = network === 'fractals';
       const baseUrl = isFractal ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
+      const graphNode = isFractal ? LOCAL_FRACTAL_GRAPH?.nodes?.[id] : LOCAL_ORDINAL_GRAPH?.nodes?.[id];
       const previewBaseUrl = isFractal ? 'https://fractal-static.unisat.io/preview' : 'https://ordinals.com/preview';
       const contentBaseUrl = isFractal ? 'https://ordinals.fractalbitcoin.io/content' : 'https://ordinals.com/content';
       const inscriptionUrl = isFractal ? `https://open-api-fractal.unisat.io/v1/indexer/inscription/info/${id}` : `https://ordinals.com/r/inscription/${id}`;
       let content = `${previewBaseUrl}/${id}`;
       let isImage = true;
       let isHtml = false;
+      const localOverride = network === 'ordinals' ? resolveLocalOrdinalsContent(id) : null;
+      if (localOverride) {
+        content = localOverride.content;
+        isImage = localOverride.isImage;
+        isHtml = localOverride.isHtml;
+      }
       let number = 'N/A';
       const meta = { ...DEFAULT_META };
+
+      if (graphNode) {
+        meta.txid = graphNode.txid || 'N/A';
+        meta.inscriptionNumber = graphNode.number ?? 'N/A';
+        meta.contentType = graphNode.contentType || 'N/A';
+        meta.contentLength = graphNode.contentLength || 'N/A';
+        meta.genesisBlock = graphNode.genesisBlock ?? 'N/A';
+        meta.address = graphNode.address || 'N/A';
+        number = graphNode.number ?? 'N/A';
+
+        if (graphNode.local?.path) {
+          content = graphNode.local.path;
+          isImage = graphNode.local.type === 'image-content';
+          isHtml = !isImage;
+        }
+
+        const filteredParents = getParentsFromLocalGraph(id).filter(p => p !== EXCLUDED_ID);
+        const children = Array.isArray(graphNode.children) ? graphNode.children : [];
+
+        let grandparents = [];
+        if (filteredParents.length > 0) {
+          const gpIds = [...new Set(filteredParents.flatMap(p => getParentsFromLocalGraph(p)))].filter(gp => gp !== EXCLUDED_ID);
+          grandparents = gpIds.map(gp => {
+            const activeGraph = getActiveGraph();
+            const gpNode = activeGraph?.nodes?.[gp] || {};
+            const local = isFractal ? gpNode.local : (gpNode.local || resolveLocalOrdinalsContent(gp));
+            return {
+              id: gp,
+              content: local?.path || `${baseUrl}/content/${gp}`,
+              isImage: local ? local.type === 'image-content' : true,
+              isHtml: local ? local.type !== 'image-content' : false,
+              number: gpNode.number ?? 'N/A',
+              meta: {
+                txid: gpNode.txid || 'N/A',
+                inscriptionNumber: gpNode.number ?? 'N/A',
+                contentType: gpNode.contentType || 'N/A',
+                contentLength: gpNode.contentLength || 'N/A',
+                genesisBlock: gpNode.genesisBlock ?? 'N/A',
+                address: gpNode.address || 'N/A'
+              }
+            };
+          });
+        }
+
+        return { id, content, isImage, isHtml, number, meta, parents: filteredParents, grandparents, greatGrandparents: [], children };
+      }
       try {
         const inscriptionResponse = await fetch(inscriptionUrl);
         if (inscriptionResponse.ok) {
@@ -167,15 +288,17 @@
           }
         }
         try {
-          const head = await fetch(content, { method: 'HEAD' });
-          const type = head.headers.get('content-type') || '';
-          if (head.status >= 400 || !type.startsWith('image/')) {
-            content = `${contentBaseUrl}/${id}`;
-            const head2 = await fetch(content, { method: 'HEAD' });
-            const type2 = head2.headers.get('content-type') || '';
-            if (!type2.startsWith('image/')) { isImage = false; isHtml = true; }
+          if (!localOverride) {
+            const head = await fetch(content, { method: 'HEAD' });
+            const type = head.headers.get('content-type') || '';
+            if (head.status >= 400 || !type.startsWith('image/')) {
+              content = `${contentBaseUrl}/${id}`;
+              const head2 = await fetch(content, { method: 'HEAD' });
+              const type2 = head2.headers.get('content-type') || '';
+              if (!type2.startsWith('image/')) { isImage = false; isHtml = true; }
+            }
           }
-        } catch { content = 'https://placehold.co/150x150?text=Error'; }
+        } catch { if (!localOverride) content = 'https://placehold.co/150x150?text=Error'; }
         const [parentsRes, childrenRes] = await Promise.all([
           fetch(`${baseUrl}/r/parents/${id}`).catch(() => ({ ok: false })),
           depth === 0 ? fetch(`${baseUrl}/r/children/${id}`).catch(() => ({ ok: false })) : { ok: false }
@@ -218,9 +341,13 @@
                     levelType === 'parent' ? `Parent #${index + 1}` :
                     levelType === 'main' ? 'Main Inscription' : `Child #${index + 1}`;
       const satoshiText = SATOSHI_IDS.includes(id) ? '<div class="satoshi-text">(Sent to Satoshi)</div>' : '';
+      const showAudio = !!LOCAL_ORDINAL_HTML_MAP?.[id];
+      const audioBtn = showAudio ? '<button class="audio-inline" title="Quack">🔊 Quack</button>' : '';
+      const forceImgZoom = FORCE_IMAGE_IDS.has(id);
+      const imgStyle = forceImgZoom ? 'style="object-fit: contain; object-position: center; image-rendering: pixelated;"' : '';
       const display = isImage
-        ? `<img src="${content}" onerror="this.src='https://placehold.co/150x150?text=Error';" alt="Inscription">`
-        : `<iframe src="${content}" sandbox=""></iframe>`;
+        ? `<img src="${content}" ${imgStyle} onerror="this.src='https://placehold.co/150x150?text=Error';" alt="Inscription">`
+        : `<iframe src="${content}" sandbox="allow-scripts allow-same-origin"></iframe>`;
       const sizeText = meta.contentLength !== 'N/A' ? `${meta.contentLength} bytes` : 'N/A';
       node.innerHTML = `
         <div class="card-inner">
@@ -228,6 +355,7 @@
             <div class="number" onclick="buildTree('${id}')">#${number}</div>
             ${display}
             <div class="label">${label}</div>
+            ${audioBtn}
             ${satoshiText}
           </div>
           <div class="card-back">
@@ -236,15 +364,27 @@
             <div class="label-line"><span class="label-title">File Type:</span><span class="label-value">${meta.contentType}</span></div>
             <div class="label-line"><span class="label-title">File Size:</span><span class="label-value">${sizeText}</span></div>
             <div class="label-line"><span class="label-title">Creation Block:</span><span class="label-value">${meta.genesisBlock}</span></div>
-            <div class="label-line"><span class="label-title">Owned By:</span><span class="label-value">${truncate(meta.address, 100)}</span></div>
           </div>
         </div>
       `;
+      const inlineAudio = node.querySelector('.audio-inline');
+      inlineAudio?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        playQuack();
+      });
       node.addEventListener('click', (e) => {
+        if (e.target.closest('.number') || e.target.closest('.audio-inline')) return;
         e.stopPropagation();
         node.classList.toggle('flipped');
       });
       return node;
+    }
+
+    function playQuack() {
+      const audio = document.getElementById('duckSound');
+      if (!audio) return;
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
     }
     function renderPagination(total) {
       const div = document.createElement('div');
@@ -302,23 +442,27 @@
         return;
       }
       try {
-        ['greatGrandparents', 'grandparents'].forEach(type => {
-          const items = mainData[type] || [];
-          const level = document.createElement('div');
-          level.className = 'level';
-          if (items.length > 1) level.innerHTML = '<div class="horizontal-line"></div>';
-          items.forEach((item, i) => {
-            const levelName = type === 'greatGrandparents' ? 'great-grandparent' : 'grandparent';
-            const node = createNode(item.id, item.content, item.isHtml, item.isImage, levelName, i, item.number, item.meta);
-            if (node) level.appendChild(node);
+        const isStartRoot = (network === 'ordinals' && inscriptionId === DEFAULT_ORDINALS_ID)
+          || (network === 'fractals' && inscriptionId === DEFAULT_FRACTALS_ID);
+        if (!isStartRoot) {
+          ['greatGrandparents', 'grandparents'].forEach(type => {
+            const items = mainData[type] || [];
+            if (!items.length) return;
+            const level = document.createElement('div');
+            level.className = 'level';
+            if (items.length > 1) level.innerHTML = '<div class="horizontal-line"></div>';
+            items.forEach((item, i) => {
+              const levelName = type === 'greatGrandparents' ? 'great-grandparent' : 'grandparent';
+              const node = createNode(item.id, item.content, item.isHtml, item.isImage, levelName, i, item.number, item.meta);
+              if (node) level.appendChild(node);
+            });
+            tree.appendChild(level);
           });
-          if (items.length === 0 && type === 'grandparents') level.innerHTML += '<div class="no-items">No Grandparents</div>';
-          tree.appendChild(level);
-        });
+        }
         const parentLevel = document.createElement('div');
         parentLevel.className = 'level';
         if (mainData.parents.length > 1) parentLevel.innerHTML = '<div class="horizontal-line"></div>';
-        if (mainData.parents.length > 0) {
+        if (!isStartRoot && mainData.parents.length > 0) {
           for (let i = 0; i < mainData.parents.length; i++) {
             const parentId = mainData.parents[i];
             try {
@@ -336,10 +480,10 @@
               console.warn('Failed to load parent', parentId);
             }
           }
-        } else {
+        } else if (!isStartRoot) {
           parentLevel.innerHTML = '<div class="no-items">No Parents</div>';
         }
-        tree.appendChild(parentLevel);
+        if (!isStartRoot) tree.appendChild(parentLevel);
         const mainLevel = document.createElement('div');
         mainLevel.className = 'level';
         const mainNode = createNode(inscriptionId, mainData.content, mainData.isHtml, mainData.isImage, 'main', 0, mainData.number, mainData.meta);

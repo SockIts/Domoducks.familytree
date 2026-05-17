@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-05-17T04:27:40.158Z",
+  "roots": {
+    "domoducks": "84defb5e7db11f047b4bc58685b65654980be4a55e254a510048a71e0e43e532i0",
+    "serial": "3f409c1e27eb0ef45b2f5c0e099cd2320f055ec9fd60c5becbb9830533fb155bi0"
+  },
+  "counts": {
+    "domoducks": 256,
+    "serial": 2560
+  },
+  "downloads": {
+    "domoducks": {
+      "ok": 2,
+      "non": 254,
+      "fail": 0,
+      "map": "omitted"
+    },
+    "serial": {
+      "ok": 2560,
+      "non": 0,
+      "fail": 0,
+      "map": "omitted"
+    }
+  }
+}

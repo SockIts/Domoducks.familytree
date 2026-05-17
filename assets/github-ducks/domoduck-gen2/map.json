@@ -1,0 +1,794 @@
+{
+  "fd2e6b0b61ea7172404466cb0dc904cadd42588e941c8b154ab645e3e07a05c3i0": {
+    "file": "fd2e6b0b61ea7172404466cb0dc904cadd42588e941c8b154ab645e3e07a05c3i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "fd2e6b0b61ea7172404466cb0dc904cadd42588e941c8b154ab645e3e07a05c3i0",
+      "number": 70334796,
+      "txid": "fd2e6b0b61ea7172404466cb0dc904cadd42588e941c8b154ab645e3e07a05c3i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 11006,
+      "genesisBlock": 840746,
+      "address": "bc1p2m432qjxk4zjfrnpwgaajs7gtywk9k5ya2acg78hn5z0cz6zurcs6a3zqx"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/fd2e6b0b61ea7172404466cb0dc904cadd42588e941c8b154ab645e3e07a05c3i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "fd2e6b0b61ea7172404466cb0dc904cadd42588e941c8b154ab645e3e07a05c3i1": {
+    "file": "fd2e6b0b61ea7172404466cb0dc904cadd42588e941c8b154ab645e3e07a05c3i1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "fd2e6b0b61ea7172404466cb0dc904cadd42588e941c8b154ab645e3e07a05c3i1",
+      "number": 70334797,
+      "txid": "fd2e6b0b61ea7172404466cb0dc904cadd42588e941c8b154ab645e3e07a05c3i1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 11830,
+      "genesisBlock": 840746,
+      "address": "bc1p2m432qjxk4zjfrnpwgaajs7gtywk9k5ya2acg78hn5z0cz6zurcs6a3zqx"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/fd2e6b0b61ea7172404466cb0dc904cadd42588e941c8b154ab645e3e07a05c3i1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "212957fe226d237522049fa2d3cf47337ae8bc6d2e90ca21ca4a188e2933bdb2i0": {
+    "file": "212957fe226d237522049fa2d3cf47337ae8bc6d2e90ca21ca4a188e2933bdb2i0.png",
+    "contentType": "image/png",
+    "meta": {
+      "id": "212957fe226d237522049fa2d3cf47337ae8bc6d2e90ca21ca4a188e2933bdb2i0",
+      "number": 72667404,
+      "txid": "212957fe226d237522049fa2d3cf47337ae8bc6d2e90ca21ca4a188e2933bdb2i0",
+      "contentType": "image/png",
+      "contentLength": 907,
+      "genesisBlock": 852790,
+      "address": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/212957fe226d237522049fa2d3cf47337ae8bc6d2e90ca21ca4a188e2933bdb2i0.png",
+      "type": "image-content",
+      "contentType": "image/png"
+    }
+  },
+  "f70b5bff08fd505f923d9fe7c3da5333ac97bbe1f14db53e385e64e3d297b0a2i0": {
+    "file": "f70b5bff08fd505f923d9fe7c3da5333ac97bbe1f14db53e385e64e3d297b0a2i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "f70b5bff08fd505f923d9fe7c3da5333ac97bbe1f14db53e385e64e3d297b0a2i0",
+      "number": 77815350,
+      "txid": "f70b5bff08fd505f923d9fe7c3da5333ac97bbe1f14db53e385e64e3d297b0a2i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 15526,
+      "genesisBlock": 871703,
+      "address": "bc1pt2n9d0ldwf8wdc9t2guh2g8phzndzdcxnmfwukwaarkpya86phesq4w6dm"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/f70b5bff08fd505f923d9fe7c3da5333ac97bbe1f14db53e385e64e3d297b0a2i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "f70b5bff08fd505f923d9fe7c3da5333ac97bbe1f14db53e385e64e3d297b0a2i1": {
+    "file": "f70b5bff08fd505f923d9fe7c3da5333ac97bbe1f14db53e385e64e3d297b0a2i1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "f70b5bff08fd505f923d9fe7c3da5333ac97bbe1f14db53e385e64e3d297b0a2i1",
+      "number": 77815351,
+      "txid": "f70b5bff08fd505f923d9fe7c3da5333ac97bbe1f14db53e385e64e3d297b0a2i1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 15082,
+      "genesisBlock": 871703,
+      "address": "bc1pt2n9d0ldwf8wdc9t2guh2g8phzndzdcxnmfwukwaarkpya86phesq4w6dm"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/f70b5bff08fd505f923d9fe7c3da5333ac97bbe1f14db53e385e64e3d297b0a2i1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "08052ae97ea14eb0801838de6af21da42bc9b23d387cedadb50b4949617b94f0i0": {
+    "file": "08052ae97ea14eb0801838de6af21da42bc9b23d387cedadb50b4949617b94f0i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "08052ae97ea14eb0801838de6af21da42bc9b23d387cedadb50b4949617b94f0i0",
+      "number": 77369295,
+      "txid": "08052ae97ea14eb0801838de6af21da42bc9b23d387cedadb50b4949617b94f0i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 11986,
+      "genesisBlock": 870264,
+      "address": "bc1qc9zr7n5cu9g00f9efh572allq98pmqqwr24gz2"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/08052ae97ea14eb0801838de6af21da42bc9b23d387cedadb50b4949617b94f0i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "08052ae97ea14eb0801838de6af21da42bc9b23d387cedadb50b4949617b94f0i1": {
+    "file": "08052ae97ea14eb0801838de6af21da42bc9b23d387cedadb50b4949617b94f0i1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "08052ae97ea14eb0801838de6af21da42bc9b23d387cedadb50b4949617b94f0i1",
+      "number": 77369296,
+      "txid": "08052ae97ea14eb0801838de6af21da42bc9b23d387cedadb50b4949617b94f0i1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 12350,
+      "genesisBlock": 870264,
+      "address": "bc1qc9zr7n5cu9g00f9efh572allq98pmqqwr24gz2"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/08052ae97ea14eb0801838de6af21da42bc9b23d387cedadb50b4949617b94f0i1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "364d0279da279d8b156e6a4776d6feba67e4e929bd1e3cbfacf5b8347bd9a25bi0": {
+    "file": "364d0279da279d8b156e6a4776d6feba67e4e929bd1e3cbfacf5b8347bd9a25bi0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "364d0279da279d8b156e6a4776d6feba67e4e929bd1e3cbfacf5b8347bd9a25bi0",
+      "number": 96210686,
+      "txid": "364d0279da279d8b156e6a4776d6feba67e4e929bd1e3cbfacf5b8347bd9a25bi0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 10694,
+      "genesisBlock": 897157,
+      "address": "bc1ptnk8p6fvd9m5eg35nanzhztd4pmqnzv69x43r46t82yypgelxj8qmdezfz"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/364d0279da279d8b156e6a4776d6feba67e4e929bd1e3cbfacf5b8347bd9a25bi0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "364d0279da279d8b156e6a4776d6feba67e4e929bd1e3cbfacf5b8347bd9a25bi1": {
+    "file": "364d0279da279d8b156e6a4776d6feba67e4e929bd1e3cbfacf5b8347bd9a25bi1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "364d0279da279d8b156e6a4776d6feba67e4e929bd1e3cbfacf5b8347bd9a25bi1",
+      "number": 96210687,
+      "txid": "364d0279da279d8b156e6a4776d6feba67e4e929bd1e3cbfacf5b8347bd9a25bi1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 10742,
+      "genesisBlock": 897157,
+      "address": "bc1ptnk8p6fvd9m5eg35nanzhztd4pmqnzv69x43r46t82yypgelxj8qmdezfz"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/364d0279da279d8b156e6a4776d6feba67e4e929bd1e3cbfacf5b8347bd9a25bi1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "d7da7c3e2d5e4fe2c42cb44c6d8132ecded13075e37719e6b69689d6e4385f54i0": {
+    "file": "d7da7c3e2d5e4fe2c42cb44c6d8132ecded13075e37719e6b69689d6e4385f54i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "d7da7c3e2d5e4fe2c42cb44c6d8132ecded13075e37719e6b69689d6e4385f54i0",
+      "number": 77757903,
+      "txid": "d7da7c3e2d5e4fe2c42cb44c6d8132ecded13075e37719e6b69689d6e4385f54i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 10730,
+      "genesisBlock": 871429,
+      "address": "bc1pnxsjz5hp78ed8u9g4xqn0r955ndtwue5yenaj9hup04n2l5lgp0qxmd3yj"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/d7da7c3e2d5e4fe2c42cb44c6d8132ecded13075e37719e6b69689d6e4385f54i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "d7da7c3e2d5e4fe2c42cb44c6d8132ecded13075e37719e6b69689d6e4385f54i1": {
+    "file": "d7da7c3e2d5e4fe2c42cb44c6d8132ecded13075e37719e6b69689d6e4385f54i1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "d7da7c3e2d5e4fe2c42cb44c6d8132ecded13075e37719e6b69689d6e4385f54i1",
+      "number": 77757904,
+      "txid": "d7da7c3e2d5e4fe2c42cb44c6d8132ecded13075e37719e6b69689d6e4385f54i1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 10570,
+      "genesisBlock": 871429,
+      "address": "bc1pnxsjz5hp78ed8u9g4xqn0r955ndtwue5yenaj9hup04n2l5lgp0qxmd3yj"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/d7da7c3e2d5e4fe2c42cb44c6d8132ecded13075e37719e6b69689d6e4385f54i1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "443f0ed5c89dc63bf1902b13fc23bde914949a8b88b00c8430d878ae84ca4950i0": {
+    "file": "443f0ed5c89dc63bf1902b13fc23bde914949a8b88b00c8430d878ae84ca4950i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "443f0ed5c89dc63bf1902b13fc23bde914949a8b88b00c8430d878ae84ca4950i0",
+      "number": 78974762,
+      "txid": "443f0ed5c89dc63bf1902b13fc23bde914949a8b88b00c8430d878ae84ca4950i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 11570,
+      "genesisBlock": 873306,
+      "address": "bc1phzzmvlmqjn8yp0m35nkjuj90ytqmxlka6vfsrn82ptut4t599ezqt7uvmv"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/443f0ed5c89dc63bf1902b13fc23bde914949a8b88b00c8430d878ae84ca4950i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "443f0ed5c89dc63bf1902b13fc23bde914949a8b88b00c8430d878ae84ca4950i1": {
+    "file": "443f0ed5c89dc63bf1902b13fc23bde914949a8b88b00c8430d878ae84ca4950i1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "443f0ed5c89dc63bf1902b13fc23bde914949a8b88b00c8430d878ae84ca4950i1",
+      "number": 78974763,
+      "txid": "443f0ed5c89dc63bf1902b13fc23bde914949a8b88b00c8430d878ae84ca4950i1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 11770,
+      "genesisBlock": 873306,
+      "address": "bc1phzzmvlmqjn8yp0m35nkjuj90ytqmxlka6vfsrn82ptut4t599ezqt7uvmv"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/443f0ed5c89dc63bf1902b13fc23bde914949a8b88b00c8430d878ae84ca4950i1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "3810c50653e999414907f149eb45606857338c365e0569fa8bd91eda706ec1b1i0": {
+    "file": "3810c50653e999414907f149eb45606857338c365e0569fa8bd91eda706ec1b1i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "3810c50653e999414907f149eb45606857338c365e0569fa8bd91eda706ec1b1i0",
+      "number": 96589344,
+      "txid": "3810c50653e999414907f149eb45606857338c365e0569fa8bd91eda706ec1b1i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 11186,
+      "genesisBlock": 898063,
+      "address": "bc1pkkyewd04z3y4yqm66rr855dr7hr2zve2mas45l53pvrjx7xhlerqs0nnpp"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/3810c50653e999414907f149eb45606857338c365e0569fa8bd91eda706ec1b1i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "3810c50653e999414907f149eb45606857338c365e0569fa8bd91eda706ec1b1i1": {
+    "file": "3810c50653e999414907f149eb45606857338c365e0569fa8bd91eda706ec1b1i1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "3810c50653e999414907f149eb45606857338c365e0569fa8bd91eda706ec1b1i1",
+      "number": 96589345,
+      "txid": "3810c50653e999414907f149eb45606857338c365e0569fa8bd91eda706ec1b1i1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 10458,
+      "genesisBlock": 898063,
+      "address": "bc1pkkyewd04z3y4yqm66rr855dr7hr2zve2mas45l53pvrjx7xhlerqs0nnpp"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/3810c50653e999414907f149eb45606857338c365e0569fa8bd91eda706ec1b1i1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "214c0bfa2e085fe2838263bdc4e1b24d3fcbffee335b09c62d04755e0797bf7di0": {
+    "file": "214c0bfa2e085fe2838263bdc4e1b24d3fcbffee335b09c62d04755e0797bf7di0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "214c0bfa2e085fe2838263bdc4e1b24d3fcbffee335b09c62d04755e0797bf7di0",
+      "number": 77852057,
+      "txid": "214c0bfa2e085fe2838263bdc4e1b24d3fcbffee335b09c62d04755e0797bf7di0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 10734,
+      "genesisBlock": 871788,
+      "address": "bc1ph2znruhmu4v252vn26aqvdfp3cn6yt7fhjkl2zwq9kwwpyvwjvqqx87jdr"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/214c0bfa2e085fe2838263bdc4e1b24d3fcbffee335b09c62d04755e0797bf7di0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "214c0bfa2e085fe2838263bdc4e1b24d3fcbffee335b09c62d04755e0797bf7di1": {
+    "file": "214c0bfa2e085fe2838263bdc4e1b24d3fcbffee335b09c62d04755e0797bf7di1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "214c0bfa2e085fe2838263bdc4e1b24d3fcbffee335b09c62d04755e0797bf7di1",
+      "number": 77852058,
+      "txid": "214c0bfa2e085fe2838263bdc4e1b24d3fcbffee335b09c62d04755e0797bf7di1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 11034,
+      "genesisBlock": 871788,
+      "address": "bc1ph2znruhmu4v252vn26aqvdfp3cn6yt7fhjkl2zwq9kwwpyvwjvqqx87jdr"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/214c0bfa2e085fe2838263bdc4e1b24d3fcbffee335b09c62d04755e0797bf7di1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "13285e41de3e77f171cf509b5cd702af7c92e56ce6cbfb48af8b49e4da88f8eei0": {
+    "file": "13285e41de3e77f171cf509b5cd702af7c92e56ce6cbfb48af8b49e4da88f8eei0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "13285e41de3e77f171cf509b5cd702af7c92e56ce6cbfb48af8b49e4da88f8eei0",
+      "number": 81302208,
+      "txid": "13285e41de3e77f171cf509b5cd702af7c92e56ce6cbfb48af8b49e4da88f8eei0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 10654,
+      "genesisBlock": 877553,
+      "address": "bc1peecvdgg7mqd5zrc8ssj4auw2l2fleqhn0f0dnhl7a8pqsqpfqg7qczmthg"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/13285e41de3e77f171cf509b5cd702af7c92e56ce6cbfb48af8b49e4da88f8eei0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "13285e41de3e77f171cf509b5cd702af7c92e56ce6cbfb48af8b49e4da88f8eei1": {
+    "file": "13285e41de3e77f171cf509b5cd702af7c92e56ce6cbfb48af8b49e4da88f8eei1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "13285e41de3e77f171cf509b5cd702af7c92e56ce6cbfb48af8b49e4da88f8eei1",
+      "number": 81302209,
+      "txid": "13285e41de3e77f171cf509b5cd702af7c92e56ce6cbfb48af8b49e4da88f8eei1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 11014,
+      "genesisBlock": 877553,
+      "address": "bc1pgfasr9f455dzua7jxwf52vahqjdz0scuz5lg6kedw4w3ljhw8qyqr64rra"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/13285e41de3e77f171cf509b5cd702af7c92e56ce6cbfb48af8b49e4da88f8eei1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "1079ba26780903c77894a1453bbe11abbb10535f74342e4b9931a88a674b510fi0": {
+    "file": "1079ba26780903c77894a1453bbe11abbb10535f74342e4b9931a88a674b510fi0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "1079ba26780903c77894a1453bbe11abbb10535f74342e4b9931a88a674b510fi0",
+      "number": 77328594,
+      "txid": "1079ba26780903c77894a1453bbe11abbb10535f74342e4b9931a88a674b510fi0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 12850,
+      "genesisBlock": 870053,
+      "address": "bc1pdkrwreak7j7xuauahmtpdn5m2m6xxch4wha8u27zf4lrqjfwn5zqgkcywh"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/1079ba26780903c77894a1453bbe11abbb10535f74342e4b9931a88a674b510fi0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "1079ba26780903c77894a1453bbe11abbb10535f74342e4b9931a88a674b510fi1": {
+    "file": "1079ba26780903c77894a1453bbe11abbb10535f74342e4b9931a88a674b510fi1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "1079ba26780903c77894a1453bbe11abbb10535f74342e4b9931a88a674b510fi1",
+      "number": 77328595,
+      "txid": "1079ba26780903c77894a1453bbe11abbb10535f74342e4b9931a88a674b510fi1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 12266,
+      "genesisBlock": 870053,
+      "address": "bc1pdkrwreak7j7xuauahmtpdn5m2m6xxch4wha8u27zf4lrqjfwn5zqgkcywh"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/1079ba26780903c77894a1453bbe11abbb10535f74342e4b9931a88a674b510fi1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "9bde191984a1eead4efe0562be93c9dbcfb918e3d8e7d52e38fd6514075361e0i0": {
+    "file": "9bde191984a1eead4efe0562be93c9dbcfb918e3d8e7d52e38fd6514075361e0i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "9bde191984a1eead4efe0562be93c9dbcfb918e3d8e7d52e38fd6514075361e0i0",
+      "number": 98095961,
+      "txid": "9bde191984a1eead4efe0562be93c9dbcfb918e3d8e7d52e38fd6514075361e0i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 13413,
+      "genesisBlock": 902891,
+      "address": "bc1psplul9l82xz7dxq72upf2umv8dq8l04j72z6juhxjwn7kny6znjqx8t5pc"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/9bde191984a1eead4efe0562be93c9dbcfb918e3d8e7d52e38fd6514075361e0i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "9bde191984a1eead4efe0562be93c9dbcfb918e3d8e7d52e38fd6514075361e0i1": {
+    "file": "9bde191984a1eead4efe0562be93c9dbcfb918e3d8e7d52e38fd6514075361e0i1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "9bde191984a1eead4efe0562be93c9dbcfb918e3d8e7d52e38fd6514075361e0i1",
+      "number": 98095962,
+      "txid": "9bde191984a1eead4efe0562be93c9dbcfb918e3d8e7d52e38fd6514075361e0i1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 12898,
+      "genesisBlock": 902891,
+      "address": "bc1psplul9l82xz7dxq72upf2umv8dq8l04j72z6juhxjwn7kny6znjqx8t5pc"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/9bde191984a1eead4efe0562be93c9dbcfb918e3d8e7d52e38fd6514075361e0i1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "6a50fdff34c85dbf61bc9700fbd739774307553045a21997a6d603c502fd3b92i0": {
+    "file": "6a50fdff34c85dbf61bc9700fbd739774307553045a21997a6d603c502fd3b92i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "6a50fdff34c85dbf61bc9700fbd739774307553045a21997a6d603c502fd3b92i0",
+      "number": 81326290,
+      "txid": "6a50fdff34c85dbf61bc9700fbd739774307553045a21997a6d603c502fd3b92i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 12694,
+      "genesisBlock": 877576,
+      "address": "bc1pr0hz6qhyx6wmwe06jpad2wtpwq9957cp72j95wtga3znq9rcfw7sxxnp2h"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/6a50fdff34c85dbf61bc9700fbd739774307553045a21997a6d603c502fd3b92i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "6a50fdff34c85dbf61bc9700fbd739774307553045a21997a6d603c502fd3b92i1": {
+    "file": "6a50fdff34c85dbf61bc9700fbd739774307553045a21997a6d603c502fd3b92i1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "6a50fdff34c85dbf61bc9700fbd739774307553045a21997a6d603c502fd3b92i1",
+      "number": 81326291,
+      "txid": "6a50fdff34c85dbf61bc9700fbd739774307553045a21997a6d603c502fd3b92i1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 12186,
+      "genesisBlock": 877576,
+      "address": "bc1pr0hz6qhyx6wmwe06jpad2wtpwq9957cp72j95wtga3znq9rcfw7sxxnp2h"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/6a50fdff34c85dbf61bc9700fbd739774307553045a21997a6d603c502fd3b92i1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "2d90bf90c6302ad3826b7d7142249aab434b660863c757d58f2a76bcaa644de7i0": {
+    "file": "2d90bf90c6302ad3826b7d7142249aab434b660863c757d58f2a76bcaa644de7i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "2d90bf90c6302ad3826b7d7142249aab434b660863c757d58f2a76bcaa644de7i0",
+      "number": 77379062,
+      "txid": "2d90bf90c6302ad3826b7d7142249aab434b660863c757d58f2a76bcaa644de7i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 12190,
+      "genesisBlock": 870357,
+      "address": "bc1pwkjs8rs7spt7ntflf90rl73r5kqdf3wnfndcjz9e86zak4d44sgs49yda8"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/2d90bf90c6302ad3826b7d7142249aab434b660863c757d58f2a76bcaa644de7i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "2d90bf90c6302ad3826b7d7142249aab434b660863c757d58f2a76bcaa644de7i1": {
+    "file": "2d90bf90c6302ad3826b7d7142249aab434b660863c757d58f2a76bcaa644de7i1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "2d90bf90c6302ad3826b7d7142249aab434b660863c757d58f2a76bcaa644de7i1",
+      "number": 77379063,
+      "txid": "2d90bf90c6302ad3826b7d7142249aab434b660863c757d58f2a76bcaa644de7i1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 12190,
+      "genesisBlock": 870357,
+      "address": "bc1pwkjs8rs7spt7ntflf90rl73r5kqdf3wnfndcjz9e86zak4d44sgs49yda8"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/2d90bf90c6302ad3826b7d7142249aab434b660863c757d58f2a76bcaa644de7i1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "1da9e26dda47277fac3902887252871340ae827800515addcd2c5dfd05f7df28i0": {
+    "file": "1da9e26dda47277fac3902887252871340ae827800515addcd2c5dfd05f7df28i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "1da9e26dda47277fac3902887252871340ae827800515addcd2c5dfd05f7df28i0",
+      "number": 77718848,
+      "txid": "1da9e26dda47277fac3902887252871340ae827800515addcd2c5dfd05f7df28i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 14754,
+      "genesisBlock": 871158,
+      "address": "bc1pmfsgh9l5w2zy7k2g5x32qfxlxvadd3l8fej9ta9we6584t7yh72s8krcl6"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/1da9e26dda47277fac3902887252871340ae827800515addcd2c5dfd05f7df28i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "1da9e26dda47277fac3902887252871340ae827800515addcd2c5dfd05f7df28i1": {
+    "file": "1da9e26dda47277fac3902887252871340ae827800515addcd2c5dfd05f7df28i1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "1da9e26dda47277fac3902887252871340ae827800515addcd2c5dfd05f7df28i1",
+      "number": 77718849,
+      "txid": "1da9e26dda47277fac3902887252871340ae827800515addcd2c5dfd05f7df28i1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 15302,
+      "genesisBlock": 871158,
+      "address": "bc1pmfsgh9l5w2zy7k2g5x32qfxlxvadd3l8fej9ta9we6584t7yh72s8krcl6"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/1da9e26dda47277fac3902887252871340ae827800515addcd2c5dfd05f7df28i1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "aa5e0e1473314afbaeb9c79c10dedb4a3578dd511e7b0960cc1b665a1e365b98i0": {
+    "file": "aa5e0e1473314afbaeb9c79c10dedb4a3578dd511e7b0960cc1b665a1e365b98i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "aa5e0e1473314afbaeb9c79c10dedb4a3578dd511e7b0960cc1b665a1e365b98i0",
+      "number": 77906205,
+      "txid": "aa5e0e1473314afbaeb9c79c10dedb4a3578dd511e7b0960cc1b665a1e365b98i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 12166,
+      "genesisBlock": 871855,
+      "address": "bc1pmfsgh9l5w2zy7k2g5x32qfxlxvadd3l8fej9ta9we6584t7yh72s8krcl6"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/aa5e0e1473314afbaeb9c79c10dedb4a3578dd511e7b0960cc1b665a1e365b98i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "aa5e0e1473314afbaeb9c79c10dedb4a3578dd511e7b0960cc1b665a1e365b98i1": {
+    "file": "aa5e0e1473314afbaeb9c79c10dedb4a3578dd511e7b0960cc1b665a1e365b98i1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "aa5e0e1473314afbaeb9c79c10dedb4a3578dd511e7b0960cc1b665a1e365b98i1",
+      "number": 77906206,
+      "txid": "aa5e0e1473314afbaeb9c79c10dedb4a3578dd511e7b0960cc1b665a1e365b98i1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 11870,
+      "genesisBlock": 871855,
+      "address": "bc1pmfsgh9l5w2zy7k2g5x32qfxlxvadd3l8fej9ta9we6584t7yh72s8krcl6"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/aa5e0e1473314afbaeb9c79c10dedb4a3578dd511e7b0960cc1b665a1e365b98i1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "abe3ca92960e5906ed3c6d4a2455758215eaa2ff19d802de685fed8a8d323ef2i0": {
+    "file": "abe3ca92960e5906ed3c6d4a2455758215eaa2ff19d802de685fed8a8d323ef2i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "abe3ca92960e5906ed3c6d4a2455758215eaa2ff19d802de685fed8a8d323ef2i0",
+      "number": 88466982,
+      "txid": "abe3ca92960e5906ed3c6d4a2455758215eaa2ff19d802de685fed8a8d323ef2i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 16634,
+      "genesisBlock": 886767,
+      "address": "bc1psemwltnd4j7tryhwpm4fsyqual4dr9te8zvmv3zl7yvzx2x8rwnq3j2lx4"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/abe3ca92960e5906ed3c6d4a2455758215eaa2ff19d802de685fed8a8d323ef2i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "abe3ca92960e5906ed3c6d4a2455758215eaa2ff19d802de685fed8a8d323ef2i1": {
+    "file": "abe3ca92960e5906ed3c6d4a2455758215eaa2ff19d802de685fed8a8d323ef2i1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "abe3ca92960e5906ed3c6d4a2455758215eaa2ff19d802de685fed8a8d323ef2i1",
+      "number": 88466983,
+      "txid": "abe3ca92960e5906ed3c6d4a2455758215eaa2ff19d802de685fed8a8d323ef2i1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 17414,
+      "genesisBlock": 886767,
+      "address": "bc1psemwltnd4j7tryhwpm4fsyqual4dr9te8zvmv3zl7yvzx2x8rwnq3j2lx4"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/abe3ca92960e5906ed3c6d4a2455758215eaa2ff19d802de685fed8a8d323ef2i1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "1e57c62a7363e913f14c66e1a8d620651663104f5fff19fead5f88275efa7754i0": {
+    "file": "1e57c62a7363e913f14c66e1a8d620651663104f5fff19fead5f88275efa7754i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "1e57c62a7363e913f14c66e1a8d620651663104f5fff19fead5f88275efa7754i0",
+      "number": 78036615,
+      "txid": "1e57c62a7363e913f14c66e1a8d620651663104f5fff19fead5f88275efa7754i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 12666,
+      "genesisBlock": 872108,
+      "address": "bc1ptv0kt0xjru8lr8td764f8wdk0pxe9paf7u7euhchrja3mvqzk9pqnkk7z7"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/1e57c62a7363e913f14c66e1a8d620651663104f5fff19fead5f88275efa7754i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "1e57c62a7363e913f14c66e1a8d620651663104f5fff19fead5f88275efa7754i1": {
+    "file": "1e57c62a7363e913f14c66e1a8d620651663104f5fff19fead5f88275efa7754i1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "1e57c62a7363e913f14c66e1a8d620651663104f5fff19fead5f88275efa7754i1",
+      "number": 78036616,
+      "txid": "1e57c62a7363e913f14c66e1a8d620651663104f5fff19fead5f88275efa7754i1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 12434,
+      "genesisBlock": 872108,
+      "address": "bc1ptv0kt0xjru8lr8td764f8wdk0pxe9paf7u7euhchrja3mvqzk9pqnkk7z7"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/1e57c62a7363e913f14c66e1a8d620651663104f5fff19fead5f88275efa7754i1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "81757005ca147a15c03b274ae83d4d9632b8b26f8eb5c071b0608fc6e8531b38i0": {
+    "file": "81757005ca147a15c03b274ae83d4d9632b8b26f8eb5c071b0608fc6e8531b38i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "81757005ca147a15c03b274ae83d4d9632b8b26f8eb5c071b0608fc6e8531b38i0",
+      "number": 98196222,
+      "txid": "81757005ca147a15c03b274ae83d4d9632b8b26f8eb5c071b0608fc6e8531b38i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 15482,
+      "genesisBlock": 903021,
+      "address": "bc1pvcs9yegtvw6td5j36hpamsavlyfa3sa3v8n0leje5es50fjgk39sfm2fwh"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/81757005ca147a15c03b274ae83d4d9632b8b26f8eb5c071b0608fc6e8531b38i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "39706e621bd46a68f601f13a20e2d05b495de9d8379e866108f379c59db9d3f1i0": {
+    "file": "39706e621bd46a68f601f13a20e2d05b495de9d8379e866108f379c59db9d3f1i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "39706e621bd46a68f601f13a20e2d05b495de9d8379e866108f379c59db9d3f1i0",
+      "number": 98311018,
+      "txid": "39706e621bd46a68f601f13a20e2d05b495de9d8379e866108f379c59db9d3f1i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 16326,
+      "genesisBlock": 903130,
+      "address": "bc1pvjxgmy4qlc58d4g240rtt6xwcmsefxt44f6s3ak2u9lanph8nawqgh64xg"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/39706e621bd46a68f601f13a20e2d05b495de9d8379e866108f379c59db9d3f1i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "be0b267e2b1825c39fdee534b25324ae937845ebc58075d149d1cc529adc7a4ei0": {
+    "file": "be0b267e2b1825c39fdee534b25324ae937845ebc58075d149d1cc529adc7a4ei0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "be0b267e2b1825c39fdee534b25324ae937845ebc58075d149d1cc529adc7a4ei0",
+      "number": 88364728,
+      "txid": "be0b267e2b1825c39fdee534b25324ae937845ebc58075d149d1cc529adc7a4ei0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 16586,
+      "genesisBlock": 886449,
+      "address": "bc1pkkyewd04z3y4yqm66rr855dr7hr2zve2mas45l53pvrjx7xhlerqs0nnpp"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/be0b267e2b1825c39fdee534b25324ae937845ebc58075d149d1cc529adc7a4ei0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "be0b267e2b1825c39fdee534b25324ae937845ebc58075d149d1cc529adc7a4ei1": {
+    "file": "be0b267e2b1825c39fdee534b25324ae937845ebc58075d149d1cc529adc7a4ei1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "be0b267e2b1825c39fdee534b25324ae937845ebc58075d149d1cc529adc7a4ei1",
+      "number": 88364729,
+      "txid": "be0b267e2b1825c39fdee534b25324ae937845ebc58075d149d1cc529adc7a4ei1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 16366,
+      "genesisBlock": 886449,
+      "address": "bc1pr3jyktg3v4ln8txmm4h9zlvu7tjlxgxtmsygfn22ed00yn00k50s200tca"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/be0b267e2b1825c39fdee534b25324ae937845ebc58075d149d1cc529adc7a4ei1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "d541fee173f0b054c2c54fc46138615047a063f2c7380a8956ad17cdcf7e2717i0": {
+    "file": "d541fee173f0b054c2c54fc46138615047a063f2c7380a8956ad17cdcf7e2717i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "d541fee173f0b054c2c54fc46138615047a063f2c7380a8956ad17cdcf7e2717i0",
+      "number": 77572929,
+      "txid": "d541fee173f0b054c2c54fc46138615047a063f2c7380a8956ad17cdcf7e2717i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 12874,
+      "genesisBlock": 870655,
+      "address": "bc1p4d05wppeg0653u2t2av3dpz52me5uxjvtse2yh8mekqvtwe0su3qush8a6"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/d541fee173f0b054c2c54fc46138615047a063f2c7380a8956ad17cdcf7e2717i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "d541fee173f0b054c2c54fc46138615047a063f2c7380a8956ad17cdcf7e2717i1": {
+    "file": "d541fee173f0b054c2c54fc46138615047a063f2c7380a8956ad17cdcf7e2717i1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "d541fee173f0b054c2c54fc46138615047a063f2c7380a8956ad17cdcf7e2717i1",
+      "number": 77572930,
+      "txid": "d541fee173f0b054c2c54fc46138615047a063f2c7380a8956ad17cdcf7e2717i1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 13282,
+      "genesisBlock": 870655,
+      "address": "bc1p4d05wppeg0653u2t2av3dpz52me5uxjvtse2yh8mekqvtwe0su3qush8a6"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/d541fee173f0b054c2c54fc46138615047a063f2c7380a8956ad17cdcf7e2717i1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "bdbce5e9e3de0d74eb97d6198f69b2cb4500873f6234d7f9b930311b20ae93b5i0": {
+    "file": "bdbce5e9e3de0d74eb97d6198f69b2cb4500873f6234d7f9b930311b20ae93b5i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "bdbce5e9e3de0d74eb97d6198f69b2cb4500873f6234d7f9b930311b20ae93b5i0",
+      "number": 98144243,
+      "txid": "bdbce5e9e3de0d74eb97d6198f69b2cb4500873f6234d7f9b930311b20ae93b5i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 12826,
+      "genesisBlock": 902982,
+      "address": "bc1plkwcnmds0hrkp0w7r7v72t0ve3xd4lfd834ae5ttep2edklrr9hq8msdfg"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/bdbce5e9e3de0d74eb97d6198f69b2cb4500873f6234d7f9b930311b20ae93b5i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "bdbce5e9e3de0d74eb97d6198f69b2cb4500873f6234d7f9b930311b20ae93b5i1": {
+    "file": "bdbce5e9e3de0d74eb97d6198f69b2cb4500873f6234d7f9b930311b20ae93b5i1.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "bdbce5e9e3de0d74eb97d6198f69b2cb4500873f6234d7f9b930311b20ae93b5i1",
+      "number": 98144244,
+      "txid": "bdbce5e9e3de0d74eb97d6198f69b2cb4500873f6234d7f9b930311b20ae93b5i1",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 12594,
+      "genesisBlock": 902982,
+      "address": "bc1plkwcnmds0hrkp0w7r7v72t0ve3xd4lfd834ae5ttep2edklrr9hq8msdfg"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/bdbce5e9e3de0d74eb97d6198f69b2cb4500873f6234d7f9b930311b20ae93b5i1.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  },
+  "3fb92abe97be8f37819f767c4ca15a7a38e5e6370377154458236aa0b5c0a379i0": {
+    "file": "3fb92abe97be8f37819f767c4ca15a7a38e5e6370377154458236aa0b5c0a379i0.html",
+    "contentType": "text/html;charset=utf-8",
+    "meta": {
+      "id": "3fb92abe97be8f37819f767c4ca15a7a38e5e6370377154458236aa0b5c0a379i0",
+      "number": 98091914,
+      "txid": "3fb92abe97be8f37819f767c4ca15a7a38e5e6370377154458236aa0b5c0a379i0",
+      "contentType": "text/html;charset=utf-8",
+      "contentLength": 12694,
+      "genesisBlock": 902879,
+      "address": "bc1prywwpy5t8ycvxs523n34h9hknw5jww5ff6vc342j23cr2wc5h89sxjvaq5"
+    },
+    "local": {
+      "path": "./assets/github-ducks/domoduck-gen2/3fb92abe97be8f37819f767c4ca15a7a38e5e6370377154458236aa0b5c0a379i0.html",
+      "type": "html-content",
+      "contentType": "text/html;charset=utf-8"
+    }
+  }
+}
