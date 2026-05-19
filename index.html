@@ -70,22 +70,34 @@
       word-break: break-all;
       color: #333;
     }
-    .node:hover .card-front { transform: scale(1.2); box-shadow: 0 8px 16px rgba(0,0,0,0.8); z-index: 10; }
+    .node:hover .card-front {
+      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.55), 0 0 18px rgba(255, 215, 0, 0.7), 0 4px 12px rgba(0,0,0,0.35);
+      z-index: 10;
+    }
+    .node img, .node iframe {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
     .node .number { font-size: 16px; color: #007bff; margin-bottom: 8px; cursor: pointer; }
     .node .number:hover { text-decoration: underline; }
     .node .label { font-size: 12px; color: #333; margin-top: 6px; }
     .node .satoshi-text { font-size: 10px; color: #007bff; margin-top: 4px; }
     .node img { width: 180px; height: 180px; object-fit: contain; image-rendering: pixelated; background: #6f7c96; }
     .node.non-main img { width: 120px; height: 120px; }
-    .node iframe { width: 180px; height: 180px; border: none; background: #6e7c96; pointer-events: none; }
+    .node iframe { width: 180px; height: 180px; border: none; background: #6e7c96; }
     .node.non-main iframe { width: 120px; height: 120px; }
+    .duck-visual { width: 180px; height: 180px; position: relative; background: #6f7c96; }
+    .node.non-main .duck-visual { width: 120px; height: 120px; }
+    .duck-visual img, .duck-visual iframe { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .duck-open { opacity: 0; pointer-events: none; }
+    .duck-visual.quacking .duck-open { opacity: 1; }
+    .duck-visual.quacking .duck-closed { opacity: 0; }
     .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
     .pagination button { padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
     .pagination button:hover { background: #0056b3; }
     .pagination button:disabled { background: #ccc; cursor: not-allowed; }
     .toggle-container { margin: 10px; }
     .toggle-container select { padding: 5px; font-size: 16px; border-radius: 5px; }
-    .audio-inline { margin-top: 4px; font-size: 12px; border: none; background: #eef5ff; color: #007bff; border-radius: 10px; padding: 2px 6px; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -113,7 +125,7 @@
 <script>
     const EXCLUDED_ID = '3076dfe2994ca4b229009eaf5696ad51c4cc68159d13a73a7927a3b8638e411ai0';
     const SATOSHI_IDS = ['84defb5e7db11f047b4bc58685b65654980be4a55e254a510048a71e0e43e532i0','3f409c1e27eb0ef45b2f5c0e099cd2320f055ec9fd60c5becbb9830533fb155bi0','212957fe226d237522049fa2d3cf47337ae8bc6d2e90ca21ca4a188e2933bdb2i0','5564e0402cd25efb8339715598946bb11d62120923b98be7bc4ed73d82928bf8i0','895060f4d9347d6f07be07cf4c0b9990abe8b2fb97db750b85eee240e07de1adi0'];
-    const CHILDREN_PER_PAGE = 16;
+    const CHILDREN_PER_PAGE = 15;
     const DEFAULT_ORDINALS_ID = '593015b9a76a11554f0a05c3b77a4723c6baaefb8bdd4175712a7320714b8ea8i0';
     const DEFAULT_FRACTALS_ID = 'a8c39053a557f72619115be77dfeb7bd8506c4d23dee7ddb86d5bc2aea421eeei0';
     let currentPage = 1;
@@ -124,28 +136,34 @@
     const LOCAL_ORDINAL_HTML_MAP_URL = './assets/github-ducks/domoducks-256-html/map.json';
     const LOCAL_ORDINAL_GRAPH_URL = './assets/graph/ordinals-local-graph-trimmed.json';
     const LOCAL_FRACTAL_GRAPH_URL = './assets/fractal/fractal-5050-graph.json';
+    const INSCRIPTIONS_META_URL = './inscriptions.json';
     let LOCAL_ORDINAL_IMAGE_MAP = null;
     let LOCAL_ORDINAL_HTML_MAP = null;
     let LOCAL_ORDINAL_GRAPH = null;
     let LOCAL_FRACTAL_GRAPH = null;
+    let INSCRIPTIONS_META_MAP = null;
     async function ensureLocalMapsLoaded() {
-      if (LOCAL_ORDINAL_IMAGE_MAP && LOCAL_ORDINAL_HTML_MAP && LOCAL_ORDINAL_GRAPH && LOCAL_FRACTAL_GRAPH) return;
+      if (LOCAL_ORDINAL_IMAGE_MAP && LOCAL_ORDINAL_HTML_MAP && LOCAL_ORDINAL_GRAPH && LOCAL_FRACTAL_GRAPH && INSCRIPTIONS_META_MAP) return;
       try {
-        const [imgRes, htmlRes, graphRes, fractalGraphRes] = await Promise.all([
+        const [imgRes, htmlRes, graphRes, fractalGraphRes, inscriptionsRes] = await Promise.all([
           fetch(LOCAL_ORDINAL_IMAGE_MAP_URL),
           fetch(LOCAL_ORDINAL_HTML_MAP_URL),
           fetch(LOCAL_ORDINAL_GRAPH_URL),
-          fetch(LOCAL_FRACTAL_GRAPH_URL)
+          fetch(LOCAL_FRACTAL_GRAPH_URL),
+          fetch(INSCRIPTIONS_META_URL)
         ]);
         LOCAL_ORDINAL_IMAGE_MAP = imgRes.ok ? await imgRes.json() : {};
         LOCAL_ORDINAL_HTML_MAP = htmlRes.ok ? await htmlRes.json() : {};
         LOCAL_ORDINAL_GRAPH = graphRes.ok ? await graphRes.json() : { nodes: {}, collections: {} };
         LOCAL_FRACTAL_GRAPH = fractalGraphRes.ok ? await fractalGraphRes.json() : { nodes: {} };
+        const inscriptionsList = inscriptionsRes.ok ? await inscriptionsRes.json() : [];
+        INSCRIPTIONS_META_MAP = Object.fromEntries((inscriptionsList || []).map(item => [item.id, item.meta || {}]));
       } catch {
         LOCAL_ORDINAL_IMAGE_MAP = {};
         LOCAL_ORDINAL_HTML_MAP = {};
         LOCAL_ORDINAL_GRAPH = { nodes: {}, collections: {} };
         LOCAL_FRACTAL_GRAPH = { nodes: {} };
+        INSCRIPTIONS_META_MAP = {};
       }
     }
     const FORCE_IMAGE_IDS = new Set([
@@ -184,6 +202,21 @@
         if (Array.isArray(pnode?.children) && pnode.children.includes(id)) parents.push(pid);
       }
       return parents;
+    }
+    function findLineagePathToRoot(startId, rootId) {
+      const seen = new Set();
+      function dfs(currentId, path) {
+        if (currentId === rootId) return path;
+        if (seen.has(currentId)) return null;
+        seen.add(currentId);
+        const parents = getParentsFromLocalGraph(currentId) || [];
+        for (const p of parents) {
+          const found = dfs(p, [...path, p]);
+          if (found) return found;
+        }
+        return null;
+      }
+      return dfs(startId, []);
     }
     function validateInscriptionId(id) {
       return /^[0-9a-fA-F]{64}i\d+$/.test(id);
@@ -331,6 +364,12 @@
         return { id, content: 'https://placehold.co/150x150?text=Error', isImage: true, isHtml: false, number: 'N/A', meta: { ...DEFAULT_META }, parents: [], grandparents: [], greatGrandparents: [], children: [] };
       }
     }
+    function getInscriptionTrait(id, traitName) {
+      const attrs = INSCRIPTIONS_META_MAP?.[id]?.attributes;
+      if (!Array.isArray(attrs)) return 'N/A';
+      const found = attrs.find(a => (a?.trait_type || '').toUpperCase() === traitName.toUpperCase());
+      return found?.value || 'N/A';
+    }
     function createNode(id, content, isHtml, isImage, levelType, index, number, meta = { ...DEFAULT_META }) {
       if (id === EXCLUDED_ID) return null;
       const node = document.createElement('div');
@@ -341,13 +380,24 @@
                     levelType === 'parent' ? `Parent #${index + 1}` :
                     levelType === 'main' ? 'Main Inscription' : `Child #${index + 1}`;
       const satoshiText = SATOSHI_IDS.includes(id) ? '<div class="satoshi-text">(Sent to Satoshi)</div>' : '';
-      const showAudio = !!LOCAL_ORDINAL_HTML_MAP?.[id];
-      const audioBtn = showAudio ? '<button class="audio-inline" title="Quack">🔊 Quack</button>' : '';
       const forceImgZoom = FORCE_IMAGE_IDS.has(id);
       const imgStyle = forceImgZoom ? 'style="object-fit: contain; object-position: center; image-rendering: pixelated;"' : '';
-      const display = isImage
-        ? `<img src="${content}" ${imgStyle} onerror="this.src='https://placehold.co/150x150?text=Error';" alt="Inscription">`
-        : `<iframe src="${content}" sandbox="allow-scripts allow-same-origin"></iframe>`;
+      const isCollection256 = network === 'ordinals' && !!INSCRIPTIONS_META_MAP?.[id];
+      const rawDuckName = isCollection256 ? (INSCRIPTIONS_META_MAP[id]?.name || '') : '';
+      const duckName = rawDuckName === 'Logo' ? '' : rawDuckName;
+      const duckSex = isCollection256 ? getInscriptionTrait(id, 'SEX') : 'N/A';
+      const duckBreed = isCollection256 ? getInscriptionTrait(id, 'BREED') : 'N/A';
+      const quackHtml = (network === 'ordinals' && LOCAL_ORDINAL_HTML_MAP?.[id]?.file)
+        ? resolveLocalOrdinalsContent(id)?.content
+        : null;
+      const quackEnabled = !!quackHtml;
+      const display = quackEnabled
+        ? `<div class="duck-visual" data-quack-enabled="1">
+             <iframe src="${quackHtml}" sandbox="allow-scripts allow-same-origin"></iframe>
+           </div>`
+        : (isImage
+          ? `<img src="${content}" ${imgStyle} onerror="this.src='https://placehold.co/150x150?text=Error';" alt="Inscription">`
+          : `<iframe src="${content}" sandbox="allow-scripts allow-same-origin"></iframe>`);
       const sizeText = meta.contentLength !== 'N/A' ? `${meta.contentLength} bytes` : 'N/A';
       node.innerHTML = `
         <div class="card-inner">
@@ -355,7 +405,7 @@
             <div class="number" onclick="buildTree('${id}')">#${number}</div>
             ${display}
             <div class="label">${label}</div>
-            ${audioBtn}
+            ${duckName ? `<div class="satoshi-text">${duckName}</div>` : ''}
             ${satoshiText}
           </div>
           <div class="card-back">
@@ -364,18 +414,33 @@
             <div class="label-line"><span class="label-title">File Type:</span><span class="label-value">${meta.contentType}</span></div>
             <div class="label-line"><span class="label-title">File Size:</span><span class="label-value">${sizeText}</span></div>
             <div class="label-line"><span class="label-title">Creation Block:</span><span class="label-value">${meta.genesisBlock}</span></div>
+            ${isCollection256 ? `<div class="label-line"><span class="label-title">Sex:</span><span class="label-value">${duckSex}</span></div>` : ''}
+            ${isCollection256 ? `<div class="label-line"><span class="label-title">Breed:</span><span class="label-value">${duckBreed}</span></div>` : ''}
           </div>
         </div>
       `;
-      const inlineAudio = node.querySelector('.audio-inline');
-      inlineAudio?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        playQuack();
-      });
       node.addEventListener('click', (e) => {
-        if (e.target.closest('.number') || e.target.closest('.audio-inline')) return;
+        if (e.target.closest('.number')) return;
         e.stopPropagation();
-        node.classList.toggle('flipped');
+
+        const isFlipped = node.classList.contains('flipped');
+        const clickedBack = !!e.target.closest('.card-back');
+        const clickedVisual = !!e.target.closest('img, iframe, .duck-visual');
+
+        if (isFlipped) {
+          if (clickedBack) node.classList.remove('flipped');
+          return;
+        }
+
+        if (clickedVisual) {
+          const quackVisual = node.querySelector('.duck-visual[data-quack-enabled="1"]');
+          if (quackVisual) {
+            playQuack();
+          }
+          return;
+        }
+
+        node.classList.add('flipped');
       });
       return node;
     }
@@ -444,7 +509,37 @@
       try {
         const isStartRoot = (network === 'ordinals' && inscriptionId === DEFAULT_ORDINALS_ID)
           || (network === 'fractals' && inscriptionId === DEFAULT_FRACTALS_ID);
-        if (!isStartRoot) {
+
+        let renderedLineage = false;
+        if (network === 'ordinals' && !isStartRoot) {
+          const lineage = findLineagePathToRoot(inscriptionId, DEFAULT_ORDINALS_ID);
+          if (Array.isArray(lineage) && lineage.length) {
+            const topDown = lineage.slice().reverse();
+            for (let i = 0; i < topDown.length; i++) {
+              const ancestorId = topDown[i];
+              const ancestorData = await fetchInscriptionData(ancestorId, 1);
+              if (!ancestorData) continue;
+              const level = document.createElement('div');
+              level.className = 'level';
+              const levelType = i === 0 ? 'great-grandparent' : 'parent';
+              const node = createNode(ancestorId, ancestorData.content, ancestorData.isHtml, ancestorData.isImage, levelType, 0, ancestorData.number, ancestorData.meta);
+              if (node) {
+                const labelEl = node.querySelector('.label');
+                if (labelEl) {
+                  if (i === 0) labelEl.textContent = 'Root #256';
+                  else if (i === 1) labelEl.textContent = 'Great-Grandparent';
+                  else if (i === 2) labelEl.textContent = 'Grandparent';
+                  else labelEl.textContent = `Ancestor #${i}`;
+                }
+                level.appendChild(node);
+                tree.appendChild(level);
+              }
+            }
+            renderedLineage = true;
+          }
+        }
+
+        if (!renderedLineage && !isStartRoot) {
           ['greatGrandparents', 'grandparents'].forEach(type => {
             const items = mainData[type] || [];
             if (!items.length) return;
@@ -459,10 +554,11 @@
             tree.appendChild(level);
           });
         }
-        const parentLevel = document.createElement('div');
-        parentLevel.className = 'level';
-        if (mainData.parents.length > 1) parentLevel.innerHTML = '<div class="horizontal-line"></div>';
-        if (!isStartRoot && mainData.parents.length > 0) {
+
+        if (!isStartRoot && mainData.parents.length > 1) {
+          const parentLevel = document.createElement('div');
+          parentLevel.className = 'level';
+          parentLevel.innerHTML = '<div class="horizontal-line"></div>';
           for (let i = 0; i < mainData.parents.length; i++) {
             const parentId = mainData.parents[i];
             try {
@@ -470,20 +566,30 @@
               if (parentData) {
                 const node = createNode(parentId, parentData.content, parentData.isHtml, parentData.isImage, 'parent', i, parentData.number, parentData.meta);
                 if (node) parentLevel.appendChild(node);
-              } else {
-                const placeholder = document.createElement('div');
-                placeholder.className = 'node non-main';
-                placeholder.innerHTML = `<div class="card-front"><div class="label">Parent #${i+1}</div><div style="padding:20px;color:#999;">Load failed</div></div>`;
-                parentLevel.appendChild(placeholder);
               }
             } catch (e) {
               console.warn('Failed to load parent', parentId);
             }
           }
-        } else if (!isStartRoot) {
-          parentLevel.innerHTML = '<div class="no-items">No Parents</div>';
+          tree.appendChild(parentLevel);
+        } else if (!renderedLineage && !isStartRoot) {
+          const parentLevel = document.createElement('div');
+          parentLevel.className = 'level';
+          if (mainData.parents.length === 1) {
+            try {
+              const parentData = await fetchInscriptionData(mainData.parents[0], 1);
+              if (parentData) {
+                const node = createNode(mainData.parents[0], parentData.content, parentData.isHtml, parentData.isImage, 'parent', 0, parentData.number, parentData.meta);
+                if (node) parentLevel.appendChild(node);
+              }
+            } catch (e) {
+              console.warn('Failed to load parent', mainData.parents[0]);
+            }
+          } else {
+            parentLevel.innerHTML = '<div class="no-items">No Parents</div>';
+          }
+          tree.appendChild(parentLevel);
         }
-        if (!isStartRoot) tree.appendChild(parentLevel);
         const mainLevel = document.createElement('div');
         mainLevel.className = 'level';
         const mainNode = createNode(inscriptionId, mainData.content, mainData.isHtml, mainData.isImage, 'main', 0, mainData.number, mainData.meta);
