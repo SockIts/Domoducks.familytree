@@ -6,9 +6,10 @@
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self' 'unsafe-eval' 'unsafe-inline' data: blob:;
     script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com;
-    img-src 'self' data: blob: https://placehold.co https://ordinals.com https://fractal-static.unisat.io https://fractal.unisat.io https://ordinals.fractalbitcoin.io;
-    frame-src 'self' https://ordinals.com https://fractal-static.unisat.io https://fractal.unisat.io https://ordinals.fractalbitcoin.io;
-    connect-src 'self' https://ordinals.com https://open-api-fractal.unisat.io https://fractal-static.unisat.io https://ordinals.fractalbitcoin.io;
+    img-src 'self' data: blob: https://placehold.co https://ordinals.com https://fractal-static.unisat.io https://fractal.unisat.io https://ordinals.fractalbitcoin.io https://testnet.acme.pics https://arweave.net;
+    media-src 'self' data: blob: https://testnet.acme.pics https://arweave.net;
+    frame-src 'self' https://ordinals.com https://fractal-static.unisat.io https://fractal.unisat.io https://ordinals.fractalbitcoin.io https://testnet.acme.pics https://arweave.net;
+    connect-src 'self' https://ordinals.com https://open-api-fractal.unisat.io https://fractal-static.unisat.io https://ordinals.fractalbitcoin.io https://testnet.acme.pics https://arweave.net;
   ">
   <title>Domoducks Family Tree</title>
   <style>
@@ -19,6 +20,7 @@
     #fetch-btn, #reset-btn { padding: 10px 10px; font-size: 16px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 8px; margin: 10px; }
     #fetch-btn:hover, #reset-btn:hover { background-color: #0056b3; }
     #error { color: red; margin-top: 10px; text-align: center; font-size: 14px; }
+    .acme-note { display: none; margin-top: 6px; font-size: 12px; color: #8a6d3b; background: #fff7d6; border: 1px solid #f0d98c; border-radius: 6px; padding: 6px 10px; }
     .loading { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
     .tree { display: flex; flex-direction: column; align-items: center; position: relative; max-width: 900px; width: 100%; }
@@ -78,6 +80,10 @@
       image-rendering: pixelated;
       image-rendering: crisp-edges;
     }
+    .acme-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.78); display: none; align-items: center; justify-content: center; z-index: 9999; }
+    .acme-modal.open { display: flex; }
+    .acme-modal-inner { max-width: 92vw; max-height: 92vh; background: #111; border-radius: 10px; padding: 10px; box-shadow: 0 12px 28px rgba(0,0,0,0.5); }
+    .acme-modal-inner img, .acme-modal-inner video, .acme-modal-inner iframe { max-width: 90vw; max-height: 88vh; min-width: 50vw; width: auto; height: auto; display: block; }
     .node .number { font-size: 16px; color: #007bff; margin-bottom: 8px; cursor: pointer; }
     .node .number:hover { text-decoration: underline; }
     .node .label { font-size: 12px; color: #333; margin-top: 8px; }
@@ -112,6 +118,7 @@
       <select id="network-toggle">
         <option value="ordinals" selected>Ordinals</option>
         <option value="fractals">Fractals</option>
+        <option value="acme">ACME Testnet</option>
       </select>
     </div>
     <!-- FIXED: Removed Chinese characters from ID -->
@@ -120,6 +127,7 @@
   <div>
     <button id="fetch-btn">Fetch Family Tree</button>
     <button id="reset-btn">Reset</button>
+    <div id="acme-note" class="acme-note">Not an official collection of the Domoduck</div>
     <div id="error"></div>
     <div id="loading" class="loading"></div>
   </div>
@@ -127,12 +135,15 @@
     <div class="vertical-line"></div>
   </div>
   <audio id="duckSound" src="data:audio/mpeg;base64,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"></audio>
+  <div id="acme-modal" class="acme-modal" onclick="closeAcmeModal(event)"><div class="acme-modal-inner" id="acme-modal-inner"></div></div>
 <script>
     const EXCLUDED_ID = '3076dfe2994ca4b229009eaf5696ad51c4cc68159d13a73a7927a3b8638e411ai0';
     const SATOSHI_IDS = ['84defb5e7db11f047b4bc58685b65654980be4a55e254a510048a71e0e43e532i0','3f409c1e27eb0ef45b2f5c0e099cd2320f055ec9fd60c5becbb9830533fb155bi0','212957fe226d237522049fa2d3cf47337ae8bc6d2e90ca21ca4a188e2933bdb2i0','5564e0402cd25efb8339715598946bb11d62120923b98be7bc4ed73d82928bf8i0','895060f4d9347d6f07be07cf4c0b9990abe8b2fb97db750b85eee240e07de1adi0'];
     const CHILDREN_PER_PAGE = 15;
     const DEFAULT_ORDINALS_ID = '593015b9a76a11554f0a05c3b77a4723c6baaefb8bdd4175712a7320714b8ea8i0';
     const DEFAULT_FRACTALS_ID = 'a8c39053a557f72619115be77dfeb7bd8506c4d23dee7ddb86d5bc2aea421eeei0';
+    const DEFAULT_ACME_ID = 'DUCKMEMES';
+    const ACME_API_BASE = 'https://testnet.acme.pics/api';
     let currentPage = 1;
     let allChildrenIds = [];
     let network = 'ordinals';
@@ -224,6 +235,7 @@
       return dfs(startId, []);
     }
     function validateInscriptionId(id) {
+      if (network === 'acme') return typeof id === 'string' && id.length > 0;
       return /^[0-9a-fA-F]{64}i\d+$/.test(id);
     }
     function truncate(str, length = 20) {
@@ -241,8 +253,66 @@
         return { id, content: 'https://placehold.co/150x150?text=Invalid+ID', isImage: true, isHtml: false, number: 'N/A', meta: { ...DEFAULT_META }, parents: [], grandparents: [], greatGrandparents: [], children: [] };
       }
       const isFractal = network === 'fractals';
+      const isAcme = network === 'acme';
       const baseUrl = isFractal ? 'https://ordinals.fractalbitcoin.io' : 'https://ordinals.com';
       const graphNode = isFractal ? LOCAL_FRACTAL_GRAPH?.nodes?.[id] : LOCAL_ORDINAL_GRAPH?.nodes?.[id];
+      if (isAcme) {
+        try {
+          const safeId = encodeURIComponent(id);
+          const [assetRes, itemsRes, contentMetaRes, cortexRes, tagsRes] = await Promise.all([
+            fetch(`${ACME_API_BASE}/assets/${safeId}`),
+            depth === 0 ? fetch(`${ACME_API_BASE}/cortex/collections/${safeId}/items?limit=500`) : Promise.resolve({ ok: false }),
+            fetch(`${ACME_API_BASE}/assets/${safeId}/content/metadata`).catch(() => ({ ok: false })),
+            fetch(`${ACME_API_BASE}/assets/${safeId}/cortex`).catch(() => ({ ok: false })),
+            fetch(`${ACME_API_BASE}/assets/${safeId}/tags`).catch(() => ({ ok: false }))
+          ]);
+          const assetJson = assetRes.ok ? await assetRes.json() : {};
+          const assetData = assetJson?.result || assetJson || {};
+          const contentMetaJson = contentMetaRes.ok ? await contentMetaRes.json() : {};
+          const contentMeta = contentMetaJson?.result || contentMetaJson || {};
+          const cortexJson = cortexRes.ok ? await cortexRes.json() : {};
+          const cortexData = cortexJson?.result || cortexJson || {};
+          const tagsJson = tagsRes.ok ? await tagsRes.json() : {};
+          const tagsData = tagsJson?.result || [];
+          const itemsJson = (depth === 0 && itemsRes.ok) ? await itemsRes.json() : { result: [] };
+          const children = Array.isArray(itemsJson?.result)
+            ? itemsJson.result.map(a => a?.reference || a?.asset || a?.asset_name).filter(Boolean)
+            : [];
+          return {
+            id,
+            content: `${ACME_API_BASE}/assets/${safeId}/content`,
+            isImage: true,
+            isHtml: false,
+            number: assetData?.asset_name || id,
+            meta: {
+              txid: assetData?.asset_longname || assetData?.asset_name || id,
+              inscriptionNumber: assetData?.asset_name || id,
+              contentType: contentMeta?.mime_type || assetData?.mime_type || assetData?.content_type || 'N/A',
+              contentLength: contentMeta?.content_size || assetData?.content_size || 'N/A',
+              genesisBlock: assetData?.first_issuance_block_index ?? assetData?.block_index ?? 'N/A',
+              address: assetData?.issuer || 'N/A',
+              acmeType: contentMeta?.mime_type || assetData?.mime_type || 'N/A',
+              acmeStorage: contentMeta?.storage_type || 'N/A',
+              acmeUaid: (assetData?.first_issuance_block_index != null && assetData?.first_issuance_tx_index != null)
+                ? `${assetData.first_issuance_block_index}|${assetData.first_issuance_tx_index}`
+                : (assetData?.asset_id ?? 'N/A'),
+              acmeTags: (Array.isArray(tagsData) && tagsData.length)
+                ? [...new Set(tagsData.map(t => (t?.tag || t?.name || '').toString().trim().toLowerCase()).filter(Boolean))].join(', ')
+                : extractAcmeTags(assetData, cortexData),
+              acmeName: assetData?.asset_name || id,
+              acmeContentUrl: `${ACME_API_BASE}/assets/${safeId}/content`,
+              acmeArweaveUrl: contentMeta?.arweave_url || ''
+            },
+            parents: id === DEFAULT_ACME_ID ? [] : [DEFAULT_ACME_ID],
+            grandparents: [],
+            greatGrandparents: [],
+            children
+          };
+        } catch (err) {
+          console.error('ACME fetch error for', id, err);
+          return { id, content: 'https://placehold.co/150x150?text=ACME+Error', isImage: true, isHtml: false, number: id, meta: { ...DEFAULT_META }, parents: [], grandparents: [], greatGrandparents: [], children: [] };
+        }
+      }
       const previewBaseUrl = isFractal ? 'https://fractal-static.unisat.io/preview' : 'https://ordinals.com/preview';
       const contentBaseUrl = isFractal ? 'https://ordinals.fractalbitcoin.io/content' : 'https://ordinals.com/content';
       const inscriptionUrl = isFractal ? `https://open-api-fractal.unisat.io/v1/indexer/inscription/info/${id}` : `https://ordinals.com/r/inscription/${id}`;
@@ -375,6 +445,22 @@
       const found = attrs.find(a => (a?.trait_type || '').toUpperCase() === traitName.toUpperCase());
       return found?.value || 'N/A';
     }
+    function extractAcmeTags(assetData = {}, cortexData = {}) {
+      const tags = [];
+      const fromArray = (arr) => Array.isArray(arr) ? arr : [];
+      const pushTag = (t) => {
+        if (!t) return;
+        if (typeof t === 'string') return tags.push(t);
+        tags.push(t?.name || t?.value || t?.tag || t?.label || '');
+      };
+      fromArray(assetData.tags).forEach(pushTag);
+      fromArray(assetData.cortex_tags).forEach(pushTag);
+      fromArray(assetData.cortex?.tags).forEach(pushTag);
+      fromArray(cortexData.tags).forEach(pushTag);
+      fromArray(cortexData?.result?.tags).forEach(pushTag);
+      fromArray(cortexData?.result?.metadata?.tags).forEach(pushTag);
+      return [...new Set(tags.map(t => (t || '').toString().trim().toLowerCase()).filter(Boolean))].join(', ') || 'N/A';
+    }
     function createNode(id, content, isHtml, isImage, levelType, index, number, meta = { ...DEFAULT_META }) {
       if (id === EXCLUDED_ID) return null;
       const node = document.createElement('div');
@@ -384,43 +470,64 @@
                     levelType === 'grandparent' ? `Grandparent #${index + 1}` :
                     levelType === 'parent' ? `Parent #${index + 1}` :
                     levelType === 'main' ? 'Main Inscription' : `Child #${index + 1}`;
+      const isAcme = network === 'acme';
       const satoshiText = SATOSHI_IDS.includes(id) ? '<div class="satoshi-text">(Sent to Satoshi)</div>' : '';
       const forceImgZoom = FORCE_IMAGE_IDS.has(id);
       const imgStyle = forceImgZoom ? 'style="object-fit: contain; object-position: center; image-rendering: pixelated;"' : '';
       const isCollection256 = network === 'ordinals' && !!INSCRIPTIONS_META_MAP?.[id];
       const rawDuckName = isCollection256 ? (INSCRIPTIONS_META_MAP[id]?.name || '') : '';
       const duckName = rawDuckName === 'Logo' ? '' : rawDuckName;
+      const assetDisplayName = isAcme ? (meta.acmeName || id) : duckName;
       const duckSex = isCollection256 ? getInscriptionTrait(id, 'SEX') : 'N/A';
       const duckBreed = isCollection256 ? getInscriptionTrait(id, 'BREED') : 'N/A';
       const quackHtml = (network === 'ordinals' && LOCAL_ORDINAL_HTML_MAP?.[id]?.file)
         ? resolveLocalOrdinalsContent(id)?.content
         : null;
       const quackEnabled = !!quackHtml;
+      const contentType = (meta.contentType || '').toLowerCase();
+      const isLikelyVideoAsset = isAcme && /world|video|mp4/.test((id || '').toLowerCase());
+      const isVideo = contentType.startsWith('video/') || contentType.includes('mp4') || isLikelyVideoAsset;
+      const mediaUrl = isAcme ? (meta.acmeContentUrl || content) : content;
+      const mediaAltUrl = isAcme ? (meta.acmeArweaveUrl || '') : '';
       const display = quackEnabled
         ? `<div class="duck-visual" data-quack-enabled="1">
              <iframe src="${quackHtml}" sandbox="allow-scripts allow-same-origin"></iframe>
            </div>`
-        : (isImage
-          ? `<img src="${content}" ${imgStyle} onerror="this.src='https://placehold.co/150x150?text=Error';" alt="Inscription">`
-          : `<iframe src="${content}" sandbox="allow-scripts allow-same-origin"></iframe>`);
+        : (isVideo
+          ? `<video data-acme-primary="${mediaUrl}" data-acme-fallback="${mediaAltUrl}" autoplay muted loop playsinline controls preload="metadata" style="width:100%;height:100%;object-fit:contain;background:#6f7c96;" onerror="if(this.dataset.acmeFallback){this.src=this.dataset.acmeFallback;this.load();}else{this.outerHTML='<iframe src=\'${mediaUrl}\' sandbox=\'allow-scripts allow-same-origin\'></iframe>'}">
+               <source src="${mediaUrl}" type="video/mp4">
+               ${mediaAltUrl ? `<source src="${mediaAltUrl}" type="video/mp4">` : ''}
+             </video>`
+          : (isImage
+            ? `<img src="${content}" ${imgStyle} onerror="this.src='https://placehold.co/150x150?text=No+image+available';" alt="Inscription">`
+            : `<iframe src="${content}" sandbox="allow-scripts allow-same-origin"></iframe>`));
       const sizeText = meta.contentLength !== 'N/A' ? `${meta.contentLength} bytes` : 'N/A';
       node.innerHTML = `
         <div class="card-inner">
           <div class="card-front">
-            <div class="number" onclick="buildTree('${id}')">#${number}</div>
+            <div class="number" onclick="buildTree('${id}')">${isAcme ? '' : `#${number}`}</div>
             ${display}
-            <div class="label">${label}</div>
-            ${duckName ? `<div class="satoshi-text">${duckName}</div>` : ''}
+            <div class="label">${isAcme ? assetDisplayName : label}</div>
+            ${(!isAcme && duckName) ? `<div class="satoshi-text">${duckName}</div>` : ''}
             ${satoshiText}
           </div>
           <div class="card-back">
-            <div class="label-line"><span class="label-title">Tx ID:</span><span class="label-value">${truncate(meta.txid, 100)}</span></div>
-            <div class="label-line"><span class="label-title">Inscription #:</span><span class="label-value">${meta.inscriptionNumber}</span></div>
-            <div class="label-line"><span class="label-title">File Type:</span><span class="label-value">${meta.contentType}</span></div>
-            <div class="label-line"><span class="label-title">File Size:</span><span class="label-value">${sizeText}</span></div>
-            <div class="label-line"><span class="label-title">Creation Block:</span><span class="label-value">${meta.genesisBlock}</span></div>
-            ${isCollection256 ? `<div class="label-line"><span class="label-title">Sex:</span><span class="label-value">${duckSex}</span></div>` : ''}
-            ${isCollection256 ? `<div class="label-line"><span class="label-title">Breed:</span><span class="label-value">${duckBreed}</span></div>` : ''}
+            ${isAcme ? `
+              <div class="label-line"><span class="label-title">Asset Name:</span><span class="label-value">${meta.acmeName || id}</span></div>
+              <div class="label-line"><span class="label-title">Type:</span><span class="label-value">${meta.acmeType || 'N/A'}</span></div>
+              <div class="label-line"><span class="label-title">Size:</span><span class="label-value">${sizeText}</span></div>
+              <div class="label-line"><span class="label-title">Storage:</span><span class="label-value">${meta.acmeStorage || 'N/A'}</span></div>
+              <div class="label-line"><span class="label-title">UAID:</span><span class="label-value">${meta.acmeUaid ?? 'N/A'}</span></div>
+              <div class="label-line"><span class="label-title">Tags:</span><span class="label-value">${meta.acmeTags || 'N/A'}</span></div>
+            ` : `
+              <div class="label-line"><span class="label-title">Tx ID:</span><span class="label-value">${truncate(meta.txid, 100)}</span></div>
+              <div class="label-line"><span class="label-title">Inscription #:</span><span class="label-value">${meta.inscriptionNumber}</span></div>
+              <div class="label-line"><span class="label-title">File Type:</span><span class="label-value">${meta.contentType}</span></div>
+              <div class="label-line"><span class="label-title">File Size:</span><span class="label-value">${sizeText}</span></div>
+              <div class="label-line"><span class="label-title">Creation Block:</span><span class="label-value">${meta.genesisBlock}</span></div>
+              ${isCollection256 ? `<div class="label-line"><span class="label-title">Sex:</span><span class="label-value">${duckSex}</span></div>` : ''}
+              ${isCollection256 ? `<div class="label-line"><span class="label-title">Breed:</span><span class="label-value">${duckBreed}</span></div>` : ''}
+            `}
           </div>
         </div>
       `;
@@ -430,7 +537,7 @@
 
         const isFlipped = node.classList.contains('flipped');
         const clickedBack = !!e.target.closest('.card-back');
-        const clickedVisual = !!e.target.closest('img, iframe, .duck-visual');
+        const clickedVisual = !!e.target.closest('img, video, iframe, .duck-visual');
 
         if (isFlipped) {
           if (clickedBack) node.classList.remove('flipped');
@@ -438,6 +545,10 @@
         }
 
         if (clickedVisual) {
+          if (isAcme) {
+            openAcmeModalFromNode(node);
+            return;
+          }
           const quackVisual = node.querySelector('.duck-visual[data-quack-enabled="1"]');
           if (quackVisual) {
             playQuack();
@@ -455,6 +566,30 @@
       if (!audio) return;
       audio.currentTime = 0;
       audio.play().catch(() => {});
+    }
+    function openAcmeModalFromNode(node) {
+      const modal = document.getElementById('acme-modal');
+      const inner = document.getElementById('acme-modal-inner');
+      if (!modal || !inner) return;
+      const media = node.querySelector('img, video, iframe');
+      if (!media) return;
+      if (media.tagName === 'IMG') inner.innerHTML = `<img src="${media.src}" alt="asset">`;
+      else if (media.tagName === 'VIDEO') {
+        const primary = media.getAttribute('data-acme-primary') || media.currentSrc || media.src;
+        const fallback = media.getAttribute('data-acme-fallback') || '';
+        inner.innerHTML = `<video controls autoplay loop muted playsinline preload="auto" style="background:#000;">
+          <source src="${primary}" type="video/mp4">
+          ${fallback ? `<source src="${fallback}" type="video/mp4">` : ''}
+        </video>`;
+      }
+      else inner.innerHTML = `<iframe src="${media.src}" sandbox="allow-scripts allow-same-origin"></iframe>`;
+      modal.classList.add('open');
+    }
+    function closeAcmeModal(event) {
+      const modal = document.getElementById('acme-modal');
+      const inner = document.getElementById('acme-modal-inner');
+      modal?.classList.remove('open');
+      if (inner) inner.innerHTML = '';
     }
     function renderPagination(total) {
       const div = document.createElement('div');
@@ -513,7 +648,8 @@
       }
       try {
         const isStartRoot = (network === 'ordinals' && inscriptionId === DEFAULT_ORDINALS_ID)
-          || (network === 'fractals' && inscriptionId === DEFAULT_FRACTALS_ID);
+          || (network === 'fractals' && inscriptionId === DEFAULT_FRACTALS_ID)
+          || (network === 'acme' && inscriptionId === DEFAULT_ACME_ID);
 
         let renderedLineage = false;
         if (network === 'ordinals' && !isStartRoot) {
@@ -619,17 +755,23 @@
       if (id) buildTree(id);
     };
     document.getElementById('reset-btn').onclick = () => {
-      const defaultId = network === 'fractals' ? DEFAULT_FRACTALS_ID : DEFAULT_ORDINALS_ID;
+      const defaultId = network === 'fractals' ? DEFAULT_FRACTALS_ID : (network === 'acme' ? DEFAULT_ACME_ID : DEFAULT_ORDINALS_ID);
       document.getElementById('inscription-id').value = defaultId;
       buildTree(defaultId);
     };
     document.getElementById('network-toggle').onchange = (e) => {
       network = e.target.value;
-      const defaultId = network === 'fractals' ? DEFAULT_FRACTALS_ID : DEFAULT_ORDINALS_ID;
+      const acmeNote = document.getElementById('acme-note');
+      if (acmeNote) acmeNote.style.display = network === 'acme' ? 'block' : 'none';
+      const defaultId = network === 'fractals' ? DEFAULT_FRACTALS_ID : (network === 'acme' ? DEFAULT_ACME_ID : DEFAULT_ORDINALS_ID);
       document.getElementById('inscription-id').value = defaultId;
       buildTree(defaultId);
     };
-    window.onload = () => buildTree(document.getElementById('inscription-id').value.trim());
+    window.onload = () => {
+      const acmeNote = document.getElementById('acme-note');
+      if (acmeNote) acmeNote.style.display = network === 'acme' ? 'block' : 'none';
+      buildTree(document.getElementById('inscription-id').value.trim());
+    };
   </script>
 </body>
 </html>
