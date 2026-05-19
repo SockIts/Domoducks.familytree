@@ -188,6 +188,7 @@
       'a1066105531b7cc234085e83c352e08405e147fc468f072762a13dc87204ac2di0',
       'f5fb1f3b1d35a8fef29c12755a05b33ca9713a20e289b1219554842c56860974i0'
     ]);
+    const FORCE_FRACTAL_HTML_IDS = new Set(['3767228845']);
     const FIXED_LOCAL_IMAGE_OVERRIDES = {
       'a1066105531b7cc234085e83c352e08405e147fc468f072762a13dc87204ac2di0': './assets/github-ducks/fixed-html/a1066105531b7cc234085e83c352e08405e147fc468f072762a13dc87204ac2di0.html',
       'f5fb1f3b1d35a8fef29c12755a05b33ca9713a20e289b1219554842c56860974i0': './assets/github-ducks/fixed-html/f5fb1f3b1d35a8fef29c12755a05b33ca9713a20e289b1219554842c56860974i0.html'
@@ -319,6 +320,11 @@
       let content = `${previewBaseUrl}/${id}`;
       let isImage = true;
       let isHtml = false;
+      if (isFractal && FORCE_FRACTAL_HTML_IDS.has(String(id))) {
+        content = `${contentBaseUrl}/${id}`;
+        isImage = false;
+        isHtml = true;
+      }
       const localOverride = network === 'ordinals' ? resolveLocalOrdinalsContent(id) : null;
       if (localOverride) {
         content = localOverride.content;
@@ -487,20 +493,23 @@
       const contentType = (meta.contentType || '').toLowerCase();
       const isLikelyVideoAsset = isAcme && /world|video|mp4/.test((id || '').toLowerCase());
       const isVideo = contentType.startsWith('video/') || contentType.includes('mp4') || isLikelyVideoAsset;
+      const isFractalReinscriptionText = network === 'fractals' && (String(id) === '3767228845' || String(number) === '3767228845');
       const mediaUrl = isAcme ? (meta.acmeContentUrl || content) : content;
       const mediaAltUrl = isAcme ? (meta.acmeArweaveUrl || '') : '';
       const display = quackEnabled
         ? `<div class="duck-visual" data-quack-enabled="1">
              <iframe src="${quackHtml}" sandbox="allow-scripts allow-same-origin"></iframe>
            </div>`
-        : (isVideo
+        : (isFractalReinscriptionText
+          ? `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#6f7c96;color:#fff;font-size:13px;font-weight:700;text-align:center;padding:8px;">Reinscriptions</div>`
+          : (isVideo
           ? `<video data-acme-primary="${mediaUrl}" data-acme-fallback="${mediaAltUrl}" autoplay muted loop playsinline controls preload="metadata" style="width:100%;height:100%;object-fit:contain;background:#6f7c96;" onerror="if(this.dataset.acmeFallback){this.src=this.dataset.acmeFallback;this.load();}else{this.outerHTML='<iframe src=\'${mediaUrl}\' sandbox=\'allow-scripts allow-same-origin\'></iframe>'}">
                <source src="${mediaUrl}" type="video/mp4">
                ${mediaAltUrl ? `<source src="${mediaAltUrl}" type="video/mp4">` : ''}
              </video>`
           : (isImage
             ? `<img src="${content}" ${imgStyle} onerror="this.src='https://placehold.co/150x150?text=No+image+available';" alt="Inscription">`
-            : `<iframe src="${content}" sandbox="allow-scripts allow-same-origin"></iframe>`));
+            : `<iframe src="${content}" sandbox="allow-scripts allow-same-origin"></iframe>`)));
       const sizeText = meta.contentLength !== 'N/A' ? `${meta.contentLength} bytes` : 'N/A';
       node.innerHTML = `
         <div class="card-inner">
