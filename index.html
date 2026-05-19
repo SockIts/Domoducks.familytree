@@ -80,8 +80,13 @@
     }
     .node .number { font-size: 16px; color: #007bff; margin-bottom: 8px; cursor: pointer; }
     .node .number:hover { text-decoration: underline; }
-    .node .label { font-size: 12px; color: #333; margin-top: 6px; }
-    .node .satoshi-text { font-size: 10px; color: #007bff; margin-top: 4px; }
+    .node .label { font-size: 12px; color: #333; margin-top: 8px; }
+    .node .satoshi-text { font-size: 10px; color: #007bff; margin-top: 6px; }
+    @media (max-width: 768px) {
+      .node .number { font-size: 14px; margin-bottom: 6px; }
+      .node .label { margin-top: 10px; }
+      .node .satoshi-text { margin-top: 7px; }
+    }
     .node img { width: 180px; height: 180px; object-fit: contain; image-rendering: pixelated; background: #6f7c96; }
     .node.non-main img { width: 120px; height: 120px; }
     .node iframe { width: 180px; height: 180px; border: none; background: #6e7c96; }
